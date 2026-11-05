@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<title>Les illes de la Nicole · Maqueta</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#E7DFC9">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Illes Nicole">
+<link rel="apple-touch-icon" href="img/icona-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="css/estil.css">
+</head>
+<body data-moment="port">
+<script src="js/art.js"></script>
+
+<!-- ===== PUERTO ===== -->
+<main id="port" class="escena">
+  <svg class="fons fons-h" aria-hidden="true"><use href="#fons-port-h"/></svg>
+  <svg class="fons fons-v" aria-hidden="true"><use href="#fons-port-v"/></svg>
+  <div class="port-moll">
+    <button id="port-guineu" class="guineu-boto" aria-label="Ajuda">
+      <svg viewBox="0 0 250 250"><use href="#guineu-assenyala"/></svg>
+    </button>
+    <button id="port-cistella" class="port-cistella" aria-label="Cistella: comença el berenar">
+      <svg viewBox="0 0 400 290"><use href="#cistella"/></svg>
+    </button>
+  </div>
+</main>
+
+<!-- ===== MERIENDA ===== -->
+<main id="berenar" class="escena" hidden>
+  <svg class="fons fons-h" aria-hidden="true"><use href="#fons-berenar-h"/></svg>
+  <svg class="fons fons-v" aria-hidden="true"><use href="#fons-berenar-v"/></svg>
+
+  <div class="taulell">
+    <section class="zona zona-origen" data-zona="arbre" aria-label="Arbre">
+      <div class="ancora ancora-arbre"><svg viewBox="0 0 480 360"><use href="#arbre"/></svg></div>
+    </section>
+    <section class="zona zona-origen" data-zona="terra" aria-label="Mata">
+      <div class="ancora ancora-mata"><svg viewBox="0 0 320 240"><use href="#mata"/></svg></div>
+    </section>
+    <section class="zona zona-origen zona-mariner" data-zona="safata" aria-label="Safata del mariner">
+      <svg class="mariner" viewBox="0 0 220 300" aria-hidden="true"><use href="#mariner"/></svg>
+      <div class="ancora ancora-recipient"><svg viewBox="0 0 400 290"><use href="#safata"/></svg></div>
+    </section>
+
+    <section class="zona zona-cistella" data-zona="cistella" aria-label="Cistella">
+      <div id="equacio" class="equacio" aria-live="polite"></div>
+      <div class="ancora ancora-recipient"><svg viewBox="0 0 400 290"><use href="#cistella"/></svg></div>
+    </section>
+
+    <div id="targetes" class="targetes"></div>
+
+    <div class="lateral">
+      <button id="boto-ajuda" class="guineu-boto" aria-label="Ajuda">
+        <svg class="mirall-h" viewBox="0 0 200 250"><use href="#guineu"/></svg>
+      </button>
+      <button id="confirma" class="boto boto-confirma" aria-label="Ja està" hidden>
+        <svg viewBox="0 0 48 48"><use href="#i-check"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="capa-pomes" class="capa-pomes"></div>
+</main>
+
+<!-- ===== Controles estables ===== -->
+<header class="barra">
+  <button id="casa" class="boto" aria-label="Torna al port"><svg viewBox="0 0 48 48"><use href="#i-illa"/></svg></button>
+  <p id="rotul" class="rotul"></p>
+  <button id="altaveu" class="boto" aria-label="Repeteix"><svg viewBox="0 0 48 48"><use href="#i-altaveu"/></svg></button>
+</header>
+
+<div class="segell-maqueta" aria-hidden="true">maqueta · veu provisional</div>
+<div class="gra" aria-hidden="true"></div>
+
+<script src="js/joc.js"></script>
+</body>
+</html>

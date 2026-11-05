@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Les illes de la Nicole · Revisión visual (Fase A)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="css/estil.css">
+<style>
+  html, body { height: auto; overflow: auto; user-select: text; -webkit-user-select: text; background: #EFE7D3; touch-action: auto; }
+  body { font: 17px/1.5 var(--text); padding: 32px clamp(16px, 4vw, 56px) 64px; max-width: 1320px; margin: 0 auto; }
+  h1 { font-size: 34px; font-weight: 500; line-height: 1.15; }
+  h2 { font-size: 23px; font-weight: 500; margin: 44px 0 6px; }
+  .intro { max-width: 68ch; margin-top: 8px; }
+  .fitxes { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0 18px; }
+  .fitxa { font: 600 15px/1 var(--xifres); padding: 12px 15px; min-height: 44px; border-radius: 10px; background: var(--paper); border: 2px solid #BCA47E; }
+  .fitxa[aria-pressed="true"] { background: var(--petroli); border-color: var(--petroli); color: var(--paper); }
+  .dispositius { display: flex; flex-wrap: wrap; gap: 28px; align-items: flex-start; }
+  .dispositiu figcaption { font: 500 14px/1.4 var(--xifres); margin-bottom: 8px; }
+  .dispositiu a { color: var(--petroli); }
+  .marc { overflow: hidden; border-radius: 22px; border: 8px solid #24363A; background: #24363A; box-sizing: content-box; }
+  .marc iframe { border: 0; display: block; transform-origin: 0 0; }
+  .mostres { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; margin-top: 12px; }
+  .mostra { --poma: 85px; --boto: 64px; --confirma: 84px; background: #CBD2AC; border-radius: 12px; padding: 16px 10px 10px; min-height: 178px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 8px; }
+  .mostra.clar { background: var(--paper); }
+  .mostra p { font: 500 13px/1.3 var(--xifres); text-align: center; color: var(--tinta); }
+  .mostra .poma, .mostra .forat { position: relative; transform: none; }
+  .mostra .targeta { width: 150px; flex: none; }
+  .mostra .boto-confirma { margin: 0; }
+  .paleta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .color { width: 112px; font: 500 12px/1.3 var(--xifres); }
+  .color i { display: block; height: 52px; border-radius: 8px; margin-bottom: 4px; box-shadow: inset 0 0 0 1px rgba(36,54,58,.15); }
+  table { border-collapse: collapse; width: 100%; margin-top: 10px; background: var(--paper); border-radius: 12px; overflow: hidden; }
+  th, td { text-align: left; vertical-align: top; padding: 11px 14px; border-top: 1px solid #DCCDAC; }
+  th { width: 150px; font-weight: 600; font-family: var(--xifres); font-size: 15px; }
+  .gra { display: none; }
+</style>
+</head>
+<body>
+<script src="js/art.js"></script>
+<h1>Les illes de la Nicole<br>Revisión visual, Fase A</h1>
+<p class="intro">Maqueta para valorar la estética y la interacción antes de construir la misión. Las dos vistas son la maqueta real, sin sonido para que no se solapen. El sonido se oye al abrirla a pantalla completa.</p>
+
+<div class="fitxes" id="fitxes">
+  <button class="fitxa" data-m="port" aria-pressed="true">Puerto</button>
+  <button class="fitxa" data-m="recull">Recoger 3</button>
+  <button class="fitxa" data-m="afegeix">Añadir 1</button>
+  <button class="fitxa" data-m="dona">Entregar 2</button>
+  <button class="fitxa" data-m="queden">Cuántas quedan</button>
+</div>
+<div class="dispositius">
+  <figure class="dispositiu"><figcaption>iPad horizontal · 1180 × 820 · al 60 % · <a href="index.html">abrir con sonido</a></figcaption>
+    <div class="marc" style="width:708px;height:492px"><iframe title="iPad" data-w="1180" data-h="820" data-s=".6"></iframe></div></figure>
+  <figure class="dispositiu"><figcaption>Móvil vertical · 390 × 844 · al 60 %</figcaption>
+    <div class="marc" style="width:234px;height:506px"><iframe title="Móvil" data-w="390" data-h="844" data-s=".6"></iframe></div></figure>
+</div>
+
+<h2>Controles y estados, a tamaño real</h2>
+<div class="mostres">
+  <div class="mostra"><button class="poma" tabindex="-1"><svg viewBox="0 0 100 100"><use href="#poma"/></svg></button><p>Manzana en reposo<br>85 px en iPad, 56–60 px en móvil</p></div>
+  <div class="mostra"><button class="poma seleccionada" tabindex="-1"><svg viewBox="0 0 100 100"><use href="#poma"/></svg></button><p>Seleccionada al tocar: se agranda y lleva aro, no depende del color</p></div>
+  <div class="mostra"><div class="forat"></div><p>Hueco de la plantilla: solo aparece al ayudar</p></div>
+  <div class="mostra"><button class="boto" tabindex="-1"><svg viewBox="0 0 48 48"><use href="#i-altaveu"/></svg></button><p>Repetir · 64 px<br>(54 px con poca altura)</p></div>
+  <div class="mostra"><button class="boto" tabindex="-1"><svg viewBox="0 0 48 48"><use href="#i-illa"/></svg></button><p>Volver al puerto · 64 px<br>(54 px con poca altura)</p></div>
+  <div class="mostra"><button class="boto boto-confirma" tabindex="-1"><svg viewBox="0 0 48 48"><use href="#i-check"/></svg></button><p>Confirmar · 84 px<br>Aparece tras el primer movimiento</p></div>
+  <div class="mostra clar"><div class="targeta"><span class="grup"><svg viewBox="0 0 100 100"><use href="#poma"/></svg><svg viewBox="0 0 100 100"><use href="#poma"/></svg></span><span class="xifra">2</span></div><p>Tarjeta en reposo</p></div>
+  <div class="mostra clar"><div class="targeta triada"><span class="grup"><svg viewBox="0 0 100 100"><use href="#poma"/></svg><svg viewBox="0 0 100 100"><use href="#poma"/></svg></span><span class="xifra">2</span><svg class="marca" viewBox="0 0 48 48"><use href="#i-check"/></svg></div><p>Tarjeta elegida: borde grueso, marca y elevación</p></div>
+</div>
+
+<h2>Paleta</h2>
+<div class="paleta">
+  <div class="color"><i style="background:#1F4A52"></i>Petróleo #1F4A52</div>
+  <div class="color"><i style="background:#3F7C80"></i>Mar #3F7C80</div>
+  <div class="color"><i style="background:#6F8F71"></i>Salvia #6F8F71</div>
+  <div class="color"><i style="background:#CBD2AC"></i>Prado #CBD2AC</div>
+  <div class="color"><i style="background:#E6D6AE"></i>Arena #E6D6AE</div>
+  <div class="color"><i style="background:#8A5A3A"></i>Madera #8A5A3A</div>
+  <div class="color"><i style="background:#5A3A25"></i>Madera oscura #5A3A25</div>
+  <div class="color"><i style="background:#C4523C"></i>Coral #C4523C</div>
+</div>
+<p class="intro">Contraste calculado: icono crema sobre madera 8,7:1; confirmar 6,8:1; texto sobre cielo 9,5:1; texto sobre prado 8,0:1; texto sobre arena 8,8:1. Los valores se calculan sobre los colores planos, sin el grano de papel.</p>
+
+<h2>Qué es cada cosa</h2>
+<table>
+  <tr><th>Funcional</th><td>Arrastre y toque-toque, devolver objetos, ayuda en tres niveles sin penalización, plantilla de huecos, demostración de mover y devolver, conteo señalado, cantidades conservadas y adaptación al girar. En iPad: controles de 76 y 100 px, la manzana sube por encima del dedo al arrastrarla, sin zoom accidental y con icono para la pantalla de inicio.</td></tr>
+  <tr><th>Maqueta</th><td>Guion reducido: faltan la pregunta «Quantes pomes tenim ara?» (paso 4) y elegir banderín (paso 7). Al saltar de momento con las fichas, las cantidades se fijan a las previstas.</td></tr>
+  <tr><th>Provisional</th><td>Voz sintética Montse de macOS, sin revisar por un hablante. Personajes, nombre, paleta y rótulos escritos. El aviso «maqueta · veu provisional» desaparecerá en la versión usable.</td></tr>
+  <tr><th>No implementado</th><td>Guardado local y retomar partida, zona de adultos, registro de intentos, variación de cantidades, música y efectos, modo sin conexión.</td></tr>
+  <tr><th>Sin comprobar</th><td>Ningún iPhone ni iPad real, ni la voz al oído. Se ha probado con motores Chromium y WebKit de escritorio en tamaño de dispositivo. WebKit de escritorio no sustituye a Safari en iOS.</td></tr>
+</table>
+
+<script>
+  const marcs = document.querySelectorAll('iframe');
+  function mostra(m) {
+    marcs.forEach(f => { f.src = 'index.html?silenci=1&sensedemo=1#' + m; });
+    document.querySelectorAll('.fitxa').forEach(b => b.setAttribute('aria-pressed', b.dataset.m === m));
+  }
+  marcs.forEach(f => { f.width = f.dataset.w; f.height = f.dataset.h; f.style.transform = `scale(${f.dataset.s})`; });
+  document.getElementById('fitxes').addEventListener('click', e => { if (e.target.dataset.m) mostra(e.target.dataset.m); });
+  mostra('port');
+</script>
+</body>
+</html>

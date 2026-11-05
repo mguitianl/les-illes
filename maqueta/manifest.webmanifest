@@ -1,0 +1,9 @@
+{
+  "name": "Les illes de la Nicole",
+  "short_name": "Illes Nicole",
+  "start_url": "index.html",
+  "display": "fullscreen",
+  "background_color": "#E7DFC9",
+  "theme_color": "#E7DFC9",
+  "icons": [{ "src": "img/icona-512.png", "sizes": "512x512", "type": "image/png" }]
+}
