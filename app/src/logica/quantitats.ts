@@ -1,10 +1,10 @@
 /* Motor de cantidades: funciones puras e inmutables.
    Invariante: cada objeto está en una única zona y ocupa una única plaza. */
 
-export const ZONES = ['arbre', 'terra', 'cistella', 'safata'] as const;
+export const ZONES = ['arbre', 'terra', 'cistella', 'safata', 'roca', 'barca', 'platja', 'sorra', 'cofre'] as const;
 export type ZonaId = (typeof ZONES)[number];
 
-export const CAPACITAT: Record<ZonaId, number> = { arbre: 5, terra: 3, cistella: 5, safata: 5 };
+export const CAPACITAT: Record<ZonaId, number> = { arbre: 5, terra: 3, cistella: 5, safata: 5, roca: 6, barca: 6, platja: 6, sorra: 5, cofre: 6 };
 
 export interface Objecte {
   id: number;

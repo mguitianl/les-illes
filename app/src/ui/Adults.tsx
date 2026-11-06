@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import type { Avis, Desat } from '../logica/desat';
-import { N_NIVELLS, N_PASSOS, pasActual, type TipusAjuda } from '../logica/missio';
-import { NIVELLS } from '../logica/textos';
+import { ILLES, NIVELLS_ILLA, passosDe, pasActual, type TipusAjuda } from '../logica/missio';
+import { NIVELLS_BADIA, NIVELLS_BERENAR, NIVELLS_BOSC, NIVELLS_TRESOR, TRESOR_AMB_FORATS } from '../logica/textos';
+import { esborra as esborraRendiment, registres } from '../rendiment';
 
 const PARAULES = ['', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve'];
 function nomPas(id: string, q: number[] = []): string {
@@ -12,19 +13,37 @@ function nomPas(id: string, q: number[] = []): string {
     case 'total': return `¿Cuántas hay? (${a} + ${b})`;
     case 'dona': return `Entregar ${b} de ${a}`;
     case 'queden': return `¿Cuántas quedan? (${a} − ${b})`;
-    case 'banderi': return 'Elegir banderín';
+    case 'puja': return `Subir ${a} a la barca`;
+    case 'mes': return `¿Dónde hay más? (${a} y ${b})`;
+    case 'baixa': return `Bajar ${b} de ${a}`;
+    case 'omple': return `Completar el cofre (${a} + ? = ${b})`;
+    case 'falten': return `¿Cuántas faltaban? (${a} + ? = ${b})`;
+    case 'parelles': return `Memory de ${a} parejas`;
+    case 'premi': case 'banderi': return 'Elegir premio';
     default: return id;
+  }
+}
+const NOM_ILLA = ['Berenar (sumar y restar)', 'Badia (contar, comparar y restar)', 'Tresor (lo que falta)', 'Bosc (memory de cantidades)'];
+const CARA: Record<string, string> = { grup: 'manzanas', xifra: 'cifra', punts: 'puntos' };
+function descripcioNivell(illa: number, n: number): string {
+  switch (ILLES[illa]) {
+    case 'berenar': { const [a, b, c] = NIVELLS_BERENAR[n]; return `${a} + ${b} = ${a + b} · ${a + b} − ${c} = ${a + b - c}`; }
+    case 'badia': { const [t, p, b] = NIVELLS_BADIA[n]; return `suben ${p} de ${t} · ${p} − ${b} = ${p - b}`; }
+    case 'tresor': return NIVELLS_TRESOR[n].map(([t, k]) => `${k} + ? = ${t}`).join(' · ') + (TRESOR_AMB_FORATS[n] ? '' : ' (sin huecos)');
+    default: { const { parelles, a, b } = NIVELLS_BOSC[n]; return `${parelles} parejas: ${CARA[a]} = ${CARA[b]}`; }
   }
 }
 const NOM_BANDERI: Record<string, string> = {
   'banderi-poma': 'coral con manzana', 'banderi-estel': 'azul con estrella', 'banderi-cor': 'amarillo con corazón',
   'banderi-lluna': 'noche con luna', 'banderi-peix': 'verde con pez', 'banderi-ona': 'olas',
+  'petxina-rosa': 'concha rosa', 'petxina-blava': 'concha azul', 'petxina-caragol': 'caracola', 'petxina-estel': 'estrella de mar',
+  'tresor-corona': 'corona', 'tresor-collaret': 'collar', 'tresor-perla': 'perla', 'tresor-anell': 'anillo',
+  'papallona-groga': 'mariposa amarilla', 'papallona-blava': 'mariposa azul', 'papallona-vermella': 'mariposa roja', 'papallona-verda': 'mariposa verde',
 };
-const descripcioNivell = (n: number) => { const [a, b, c] = NIVELLS[n]; return `${a} + ${b} = ${a + b} · ${a + b} − ${c} = ${a + b - c}`; };
 const NOM_AJUDA: Record<TipusAjuda, string> = { cap: 'Ninguna', senyalar: 'Señalar', comptar: 'Contar juntos', demostrar: 'Demostración' };
 const NOM_AVIS: Partial<Record<Avis, string>> = {
   danyat: 'Los datos guardados estaban dañados. Se ha empezado de nuevo y se ha conservado una copia en este navegador.',
-  'missio-reiniciada': 'La partida en curso no era coherente y se ha reiniciado. Los banderines se conservan.',
+  'missio-reiniciada': 'La partida en curso no era coherente y se ha reiniciado. Los premios se conservan.',
 };
 
 interface Props {
@@ -34,7 +53,7 @@ interface Props {
   veuFallida: boolean;
   onTanca(): void;
   onCanvia(f: (d: Desat) => Desat): void;
-  onNivell(n: number): void;
+  onNivell(illa: number, nivell: number): void;
   onReiniciaMissio(): void;
   onEsborraTot(): void;
 }
@@ -95,11 +114,11 @@ export default function Adults(props: Props) {
         <h3>Resumen</h3>
         <dl className="resum">
           <dt>Misiones completadas</dt><dd>{desat.missionsCompletades}</dd>
-          <dt>Partida en curso</dt><dd>{missio ? `Nivel ${missio.nivell + 1} · paso ${missio.pas + 1} de ${N_PASSOS}: ${nomPas(pasActual(missio)?.id ?? '', pasActual(missio)?.quantitats)}` : 'Ninguna'}</dd>
-          <dt>Próxima misión</dt><dd>{missio ? 'Al terminar la actual, el nivel siguiente' : `Nivel ${desat.nivell + 1} de ${N_NIVELLS} (${descripcioNivell(desat.nivell)})`}</dd>
+          <dt>Partida en curso</dt><dd>{missio ? `Isla ${missio.illa + 1}, nivel ${missio.nivell + 1} · paso ${missio.pas + 1} de ${passosDe(missio).length}: ${nomPas(pasActual(missio)?.id ?? '', pasActual(missio)?.quantitats)}` : 'Ninguna'}</dd>
+          {ILLES.map((_, i) => <Fragment key={i}><dt>{NOM_ILLA[i]}</dt><dd>{desat.progres[i]} de {NIVELLS_ILLA} niveles</dd></Fragment>)}
           <dt>Pasos resueltos sin ayuda</dt><dd>{independents}</dd>
           <dt>Pasos resueltos con ayuda</dt><dd>{ambAjuda}</dd>
-          <dt>Banderines</dt><dd>{desat.adorns.length ? desat.adorns.map(b => NOM_BANDERI[b] ?? b).join(', ') : 'Todavía ninguno'}</dd>
+          <dt>Premios</dt><dd>{desat.premis.length ? desat.premis.map(b => NOM_BANDERI[b] ?? b).join(', ') : 'Todavía ninguno'}</dd>
         </dl>
         <p className="nota">Son registros de lo que ha pasado, no una medida de capacidad. Una sesión no demuestra aprendizaje.</p>
       </section>
@@ -109,12 +128,12 @@ export default function Adults(props: Props) {
         {intents.length === 0 ? <p>Todavía no hay registros.</p> : (
           <div className="taula-scroll">
             <table>
-              <thead><tr><th>Cuándo</th><th>Nivel</th><th>Paso</th><th>Respuesta</th><th>Primera respuesta</th><th>Ayuda</th></tr></thead>
+              <thead><tr><th>Cuándo</th><th>Isla · nivel</th><th>Paso</th><th>Respuesta</th><th>Primera respuesta</th><th>Ayuda</th></tr></thead>
               <tbody>
                 {intents.map((i, k) => (
                   <tr key={k}>
                     <td>{new Date(i.data).toLocaleString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</td>
-                    <td>{(i.nivell ?? 0) + 1}</td>
+                    <td>{(i.illa ?? 0) + 1} · {(i.nivell ?? 0) + 1}</td>
                     <td>{nomPas(i.pas, i.quantitats)}</td>
                     <td>{i.habilitat === 'estetica' ? '—' : String(i.resposta)}</td>
                     <td>{i.habilitat === 'estetica' || i.primeraResposta === i.resposta ? '—' : String(i.primeraResposta)}</td>
@@ -128,16 +147,24 @@ export default function Adults(props: Props) {
       </section>
 
       <section>
-        <h3>Nivel</h3>
-        <p className="nota">Cada misión completada pasa al nivel siguiente; después del último vuelve al primero. Las cantidades no pasan de 5. Elegir un nivel deja la misión en curso y empieza ese nivel al tocar la cesta.</p>
-        <div className="nivells">
-          {NIVELLS.map((_, n) => (
-            <button key={n} className={`nivell${(missio ? missio.nivell : desat.nivell) === n ? ' actiu' : ''}`} onClick={() => props.onNivell(n)}>
-              <strong>{n + 1}</strong><span>{descripcioNivell(n)}</span>
-            </button>
-          ))}
-        </div>
+        <h3>Islas y niveles</h3>
+        <p className="nota">Cada isla tiene 4 niveles, de más fácil a más difícil. Al completar los 4 se abre la siguiente en el mapa. Elegir un nivel lo deja preparado: empieza al tocar esa isla en el mapa. No borra el progreso.</p>
+        {ILLES.map((_, il) => (
+          <div key={il} className="illa-nivells">
+            <h4>{il + 1}. {NOM_ILLA[il]}</h4>
+            <div className="nivells">
+              {Array.from({ length: NIVELLS_ILLA }, (_, n) => (
+                <button key={n} className={`nivell${missio && missio.illa === il && missio.nivell === n ? ' actiu' : ''}`}
+                  onClick={() => props.onNivell(il, n)}>
+                  <strong>Nivel {n + 1}{n < desat.progres[il] ? ' ✓' : ''}</strong><span>{descripcioNivell(il, n)}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
       </section>
+
+      <Rendiment />
 
       <section>
         <h3>Ajustes</h3>
@@ -181,9 +208,42 @@ export default function Adults(props: Props) {
           <li>Solo en este dispositivo y en esta dirección web. El móvil y el iPad tienen partidas separadas.</li>
           <li>El icono de la pantalla de inicio guarda aparte de Safari: conviene usar siempre el mismo acceso.</li>
           <li>Borrar los datos de Safari borra la partida. Safari también puede borrar los datos de webs que no se abren en varios días; desde la pantalla de inicio es menos probable.</li>
-          <li>Si cambia la dirección del Mac en la red, el iPad lo trata como otra web y empieza de cero.</li>
+          <li>La web publicada y la del Mac en la red local son partidas distintas.</li>
         </ul>
       </section>
     </div>
+  );
+}
+
+/** Tirones medidos en este dispositivo: sirve para saber si el juego va lento en el iPad o el móvil. */
+function Rendiment() {
+  const [rs, setRs] = useState(registres);
+  const ultims = [...rs].reverse().slice(0, 15);
+  return (
+    <section>
+      <h3>Fluidez en este dispositivo</h3>
+      <p className="nota">Cada pantalla cuenta los tirones (fotogramas de más de 50 ms). Unos pocos por minuto es normal; decenas indican que el dispositivo va justo.</p>
+      {ultims.length === 0 ? <p>Todavía no hay mediciones.</p> : (
+        <div className="taula-scroll">
+          <table>
+            <thead><tr><th>Cuándo</th><th>Pantalla</th><th>Duración</th><th>Tirones</th><th>Por minuto</th><th>Peor</th></tr></thead>
+            <tbody>
+              {ultims.map((r, k) => (
+                <tr key={k}>
+                  <td>{new Date(r.quan).toLocaleString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</td>
+                  <td>{r.on}</td>
+                  <td>{r.segons} s</td>
+                  <td>{r.tirons} de {r.fotogrames}</td>
+                  <td>{r.segons ? Math.round((r.tirons * 60) / r.segons) : '—'}</td>
+                  <td>{r.pitjor} ms</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      <p className="nota">{navigator.userAgent}</p>
+      {ultims.length > 0 && <button className="boto-text" onClick={() => { esborraRendiment(); setRs([]); }}>Borrar mediciones</button>}
+    </section>
   );
 }

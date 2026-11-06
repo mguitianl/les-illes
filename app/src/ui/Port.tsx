@@ -49,8 +49,8 @@ export default function Port({ banderi, veuInicial, alzaBanderi, onEntra }: Prop
         <button id="port-guineu" className="guineu-boto" aria-label="Ajuda" onClick={ajuda}>
           <Dibuix id="guineu-assenyala" w={250} h={250} />
         </button>
-        <button ref={cistella} id="port-cistella" className="port-cistella" aria-label="Cistella: comença el berenar" onClick={onEntra}>
-          <Dibuix id="cistella" w={400} h={290} />
+        <button ref={cistella} id="port-timo" className="port-cistella port-timo" aria-label="Timó: salpem" onClick={onEntra}>
+          <Dibuix id="timo" w={200} h={200} />
         </button>
       </div>
     </main>

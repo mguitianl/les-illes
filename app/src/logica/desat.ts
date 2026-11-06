@@ -1,20 +1,20 @@
 /* Guardado local versionado. Solo lo mínimo, sin datos personales. */
-import { BANDERINS, N_NIVELLS, esEstatValid, type Banderi, type EstatMissio, type Intent } from './missio';
+import { BANDERINS, N_ILLES, NIVELLS_ILLA, PREMIS, esEstatValid, type EstatMissio, type Intent } from './missio';
 
 export const CLAU = 'illes-nicole';
 export const CLAU_DANYAT = 'illes-nicole-danyat';
-export const VERSIO = 2;
-export const MAX_INTENTS = 200;
+export const VERSIO = 3;
+export const MAX_INTENTS = 300;
 
 export interface Desat {
   versio: typeof VERSIO;
   preferencies: { veu: boolean };
   missio: EstatMissio | null;
-  /** Nivel con el que empieza la próxima misión. */
-  nivell: number;
-  /** Adornos conseguidos; no se pierden al reiniciar una actividad. */
-  adorns: Banderi[];
-  banderiActiu: Banderi | null;
+  /** Niveles completados en cada isla (0 a NIVELLS_ILLA). */
+  progres: number[];
+  /** Premios conseguidos; no se pierden al reiniciar una actividad. */
+  premis: string[];
+  banderiActiu: string | null;
   tutorialVist: boolean;
   missionsCompletades: number;
   intents: Intent[];
@@ -24,23 +24,27 @@ export interface Desat {
 export type Avis = 'cap' | 'nou' | 'danyat' | 'missio-reiniciada';
 
 export const nou = (): Desat => ({
-  versio: VERSIO, preferencies: { veu: true }, missio: null, nivell: 0, adorns: [], banderiActiu: null,
+  versio: VERSIO, preferencies: { veu: true }, missio: null, progres: Array(N_ILLES).fill(0), premis: [], banderiActiu: null,
   tutorialVist: false, missionsCompletades: 0, intents: [], notes: '',
 });
 
 type Magatzem = Pick<Storage, 'getItem' | 'setItem'>;
+type Cru = Record<string, unknown>;
+const enter = (x: unknown, def = 0) => (Number.isInteger(x) ? (x as number) : def);
 
 /** Migraciones de versiones anteriores. Cada entrada transforma la versión n en la n+1. */
-const MIGRACIONS: Record<number, (d: Record<string, unknown>) => Record<string, unknown>> = {
-  // v2: niveles. La partida en curso era del primer nivel; la siguiente misión pasa al nivel 2.
-  1: d => {
-    const m = d.missio as Record<string, unknown> | null | undefined;
-    const fetes = Number.isInteger(d.missionsCompletades) ? (d.missionsCompletades as number) : 0;
-    return { ...d, versio: 2, nivell: Math.min(fetes, 1), missio: m && typeof m === 'object' ? { ...m, nivell: 0 } : m ?? null };
-  },
+const MIGRACIONS: Record<number, (d: Cru) => Cru> = {
+  // v2: niveles del berenar.
+  1: d => ({ ...d, versio: 2, nivell: Math.min(enter(d.missionsCompletades), 1), missio: null }),
+  // v3: islas. Lo jugado cuenta como niveles del berenar; la partida a medias se descarta (cambió de forma).
+  2: d => ({
+    ...d, versio: 3, missio: null,
+    progres: [Math.min(enter(d.missionsCompletades), NIVELLS_ILLA), ...Array(N_ILLES - 1).fill(0)],
+    premis: Array.isArray(d.adorns) ? d.adorns : [],
+  }),
 };
 
-export function migra(d: Record<string, unknown>): Record<string, unknown> | null {
+export function migra(d: Cru): Cru | null {
   let v = d.versio;
   let out = d;
   while (typeof v === 'number' && v < VERSIO) {
@@ -52,22 +56,24 @@ export function migra(d: Record<string, unknown>): Record<string, unknown> | nul
   return v === VERSIO ? out : null;
 }
 
-const esBanderi = (x: unknown): x is Banderi => (BANDERINS as readonly unknown[]).includes(x);
+const TOTS_PREMIS = new Set(Object.values(PREMIS).flat());
+const esPremi = (x: unknown): x is string => typeof x === 'string' && TOTS_PREMIS.has(x);
 
 export function valida(raw: unknown): { desat: Desat; avis: Avis } | null {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
-  const d = migra(raw as Record<string, unknown>);
+  const d = migra(raw as Cru);
   if (!d) return null;
   const base = nou();
   const pref = d.preferencies as Desat['preferencies'] | undefined;
+  const progres = Array.isArray(d.progres) ? d.progres : [];
   const out: Desat = {
     ...base,
     preferencies: { veu: typeof pref?.veu === 'boolean' ? pref.veu : true },
-    adorns: Array.isArray(d.adorns) ? [...new Set(d.adorns.filter(esBanderi))] : [],
-    banderiActiu: esBanderi(d.banderiActiu) ? d.banderiActiu : null,
-    nivell: Number.isInteger(d.nivell) && (d.nivell as number) >= 0 && (d.nivell as number) < N_NIVELLS ? (d.nivell as number) : 0,
+    progres: base.progres.map((_, i) => Math.max(0, Math.min(NIVELLS_ILLA, enter(progres[i])))),
+    premis: Array.isArray(d.premis) ? [...new Set(d.premis.filter(esPremi))] : [],
+    banderiActiu: esPremi(d.banderiActiu) && BANDERINS.includes(d.banderiActiu) ? d.banderiActiu : null,
     tutorialVist: d.tutorialVist === true,
-    missionsCompletades: Number.isInteger(d.missionsCompletades) ? (d.missionsCompletades as number) : 0,
+    missionsCompletades: enter(d.missionsCompletades),
     intents: Array.isArray(d.intents) ? (d.intents as Intent[]).filter(i => i && typeof i.pas === 'string').slice(-MAX_INTENTS) : [],
     notes: typeof d.notes === 'string' ? d.notes : '',
   };
@@ -111,16 +117,32 @@ export function ambIntent(d: Desat, i: Intent): Desat {
   return { ...d, intents: [...d.intents, i].slice(-MAX_INTENTS) };
 }
 
-/** Al terminar: suma la misión, pasa al nivel siguiente y guarda el banderín sin duplicar premios.
-    Después del último nivel se vuelve a empezar la lista. */
-export function completaMissio(d: Desat, b: Banderi | null): Desat {
-  const actual = d.missio?.nivell ?? d.nivell;
+/* ---------- Mapa ---------- */
+
+export const illaCompleta = (d: Desat, i: number) => d.progres[i] >= NIVELLS_ILLA;
+/** Una isla se abre cuando la anterior está completa. */
+export const desbloquejada = (d: Desat, i: number) => i === 0 || illaCompleta(d, i - 1);
+/** Isla donde está el barco: la primera sin completar (o la última). */
+export function illaActual(d: Desat): number {
+  const i = d.progres.findIndex(p => p < NIVELLS_ILLA);
+  return i < 0 ? N_ILLES - 1 : i;
+}
+/** Nivel que se juega al tocar una isla: el siguiente pendiente o, si ya está completa, uno cualquiera para repetir. */
+export function nivellPer(d: Desat, i: number): number {
+  return illaCompleta(d, i) ? d.missionsCompletades % NIVELLS_ILLA : d.progres[i];
+}
+
+/** Al terminar: suma la misión, avanza el progreso de la isla y guarda el premio sin duplicarlo. */
+export function completaMissio(d: Desat, premi: string | null): Desat {
+  const m = d.missio;
+  const progres = [...d.progres];
+  if (m) progres[m.illa] = Math.max(progres[m.illa], m.nivell + 1);
   return {
     ...d,
     missio: null,
-    nivell: (actual + 1) % N_NIVELLS,
+    progres,
     missionsCompletades: d.missionsCompletades + 1,
-    adorns: b && !d.adorns.includes(b) ? [...d.adorns, b] : d.adorns,
-    banderiActiu: b ?? d.banderiActiu,
+    premis: premi && !d.premis.includes(premi) ? [...d.premis, premi] : d.premis,
+    banderiActiu: premi && BANDERINS.includes(premi) ? premi : d.banderiActiu,
   };
 }

@@ -276,6 +276,214 @@ export const SPRITE = `
   <g fill="#F4ECD9"><circle cx="40" cy="460" r="4"/><circle cx="50" cy="465" r="3"/><circle cx="340" cy="380" r="4"/></g>
 </symbol>
 
+<!-- ================= ILLES NOVES ================= -->
+<!-- Objectes que es mouen -->
+<symbol id="tortuga" viewBox="0 0 100 100">
+  <path d="M76 58C84 50 95 52 97 60C99 68 90 73 80 70Z" fill="#8FB07C"/>
+  <circle cx="90" cy="59" r="2.6" fill="#24363A"/>
+  <path d="M20 68L13 84H27L32 70ZM62 68L61 84H75L74 68Z" fill="#7C9C6B"/>
+  <path d="M10 68L2 72" stroke="#7C9C6B" stroke-width="6" stroke-linecap="round"/>
+  <path d="M8 70C8 40 28 24 46 24C66 24 82 40 82 70Z" fill="#4C7A5C"/>
+  <path d="M8 68H82C82 74 79 77 75 77H15C11 77 8 74 8 68Z" fill="#E3C27A"/>
+  <path d="M28 33L36 48H54L62 33M36 48L30 68M54 48L60 68M14 52H36M54 52H78" fill="none" stroke="#35644A" stroke-width="3" stroke-linecap="round"/>
+  <path d="M24 38C30 31 38 28 44 28" stroke="#6F9C78" stroke-width="4" fill="none" stroke-linecap="round"/>
+</symbol>
+<symbol id="moneda" viewBox="0 0 100 100">
+  <circle cx="50" cy="55" r="40" fill="#A97A22"/>
+  <circle cx="50" cy="50" r="40" fill="#E8B84A"/>
+  <circle cx="50" cy="50" r="30" fill="none" stroke="#C99A33" stroke-width="5"/>
+  <path d="M50 31L55 44H68L58 52L62 66L50 58L38 66L42 52L32 44H45Z" fill="#C99A33"/>
+  <path d="M26 36C32 27 40 22 50 21" stroke="#F8E0A0" stroke-width="5" fill="none" stroke-linecap="round"/>
+</symbol>
+<symbol id="moneda-plata" viewBox="0 0 100 100">
+  <circle cx="50" cy="55" r="40" fill="#7D858A"/>
+  <circle cx="50" cy="50" r="40" fill="#C6CCD0"/>
+  <circle cx="50" cy="50" r="30" fill="none" stroke="#9EA6AB" stroke-width="5"/>
+  <circle cx="50" cy="50" r="12" fill="#9EA6AB"/>
+  <path d="M26 36C32 27 40 22 50 21" stroke="#EEF1F2" stroke-width="5" fill="none" stroke-linecap="round"/>
+</symbol>
+
+<!-- Recipients i llocs -->
+<symbol id="roca" viewBox="0 0 420 260">
+  <ellipse cx="210" cy="228" rx="206" ry="28" fill="#A9CBC4" opacity=".6"/>
+  <path d="M18 224C12 160 58 96 140 80C200 50 300 60 360 110C400 142 412 190 402 224Z" fill="#8C8A80"/>
+  <path d="M18 224C40 200 92 190 152 196C232 204 322 190 402 224Z" fill="#6F6D65"/>
+  <path d="M84 120C122 96 170 90 204 92M280 92C310 100 336 114 352 132" stroke="#A9A69A" stroke-width="10" stroke-linecap="round" fill="none"/>
+  <path d="M26 228C80 216 140 234 210 226C280 218 340 234 404 224" stroke="#DCEBE6" stroke-width="5" fill="none" stroke-linecap="round"/>
+</symbol>
+<symbol id="barca" viewBox="0 0 440 260">
+  <path d="M8 112C40 60 400 60 432 112C422 194 340 246 220 250C100 246 18 194 8 112Z" fill="#53331F"/>
+  <path d="M8 102C40 50 400 50 432 102C422 184 340 236 220 240C100 236 18 184 8 102Z" fill="#C4523C"/>
+  <path d="M30 106C58 70 382 70 410 106C402 172 332 214 220 218C108 214 38 172 30 106Z" fill="#B88A5C"/>
+  <path d="M52 132H388M62 166H378M96 196H344" stroke="#8A5A3A" stroke-width="3" opacity=".55"/>
+  <path d="M30 106C58 70 382 70 410 106" fill="none" stroke="#8A5A3A" stroke-width="6"/>
+  <path d="M138 78V214M302 78V214" stroke="#8A5A3A" stroke-width="16" stroke-linecap="round"/>
+</symbol>
+<symbol id="platja" viewBox="0 0 420 260">
+  <path d="M10 202C0 122 60 62 200 58C340 54 420 112 410 202C400 244 30 252 10 202Z" fill="#E9D3A0"/>
+  <path d="M10 202C60 222 340 232 410 202C400 244 30 252 10 202Z" fill="#D7BC82"/>
+  <g fill="#F6EDDC"><circle cx="80" cy="120" r="5"/><circle cx="92" cy="126" r="3.500"/><circle cx="340" cy="110" r="4"/><circle cx="300" cy="206" r="5"/></g>
+  <path d="M56 214C66 198 82 198 90 214Z" fill="#E7A99A"/>
+</symbol>
+<symbol id="sorra" viewBox="0 0 420 260">
+  <ellipse cx="210" cy="228" rx="200" ry="24" fill="#BFA270" opacity=".45"/>
+  <path d="M14 226C30 122 120 72 210 72C300 72 390 122 406 226Z" fill="#E6CC92"/>
+  <path d="M14 226C80 202 330 202 406 226Z" fill="#D3B678"/>
+  <path d="M86 146C116 114 160 98 200 96" stroke="#F3E2B6" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <path d="M370 40L346 160" stroke="#8A5A3A" stroke-width="11" stroke-linecap="round"/>
+  <path d="M332 150L360 156L352 200C346 210 330 208 328 198Z" fill="#7F949A"/>
+</symbol>
+<symbol id="cofre" viewBox="0 0 420 300">
+  <path d="M38 98V44C38 10 382 10 382 44V98Z" fill="#7A4A2A"/>
+  <path d="M60 94V50C60 30 360 30 360 50V94Z" fill="#5A3A25"/>
+  <path d="M96 12V98M324 12V98" stroke="#C9A24A" stroke-width="18"/>
+  <rect x="18" y="90" width="384" height="204" rx="18" fill="#8A5A3A"/>
+  <rect x="38" y="104" width="344" height="150" rx="12" fill="#3F2717"/>
+  <rect x="18" y="238" width="384" height="56" rx="14" fill="#A06A40"/>
+  <path d="M96 90V294M324 90V294" stroke="#C9A24A" stroke-width="18"/>
+  <rect x="184" y="232" width="52" height="58" rx="9" fill="#E0B84E"/>
+  <path d="M210 250V268" stroke="#5A3A25" stroke-width="8" stroke-linecap="round"/>
+</symbol>
+<symbol id="timo" viewBox="0 0 200 200">
+  <g stroke="#6B4329" stroke-width="13" stroke-linecap="round"><path d="M100 10V190M10 100H190M36 36L164 164M164 36L36 164"/></g>
+  <g fill="#53331F"><circle cx="100" cy="10" r="10"/><circle cx="100" cy="190" r="10"/><circle cx="10" cy="100" r="10"/><circle cx="190" cy="100" r="10"/><circle cx="36" cy="36" r="10"/><circle cx="164" cy="164" r="10"/><circle cx="164" cy="36" r="10"/><circle cx="36" cy="164" r="10"/></g>
+  <circle cx="100" cy="100" r="62" fill="none" stroke="#8A5A3A" stroke-width="22"/>
+  <circle cx="100" cy="100" r="62" fill="none" stroke="#B88A5C" stroke-width="7"/>
+  <circle cx="100" cy="100" r="22" fill="#8A5A3A"/><circle cx="100" cy="100" r="9" fill="#E0B84E"/>
+</symbol>
+<symbol id="avet" viewBox="0 0 120 200">
+  <rect x="52" y="160" width="16" height="40" rx="4" fill="#6B4329"/>
+  <path d="M60 4L104 80H82L114 140H88L118 172H2L32 140H6L38 80H16Z" fill="#4E6E56"/>
+  <path d="M60 4L104 80H82L114 140H88L118 172H60Z" fill="#3F5D48"/>
+</symbol>
+<symbol id="fulla" viewBox="0 0 100 100">
+  <path d="M50 92C18 76 10 40 50 8C90 40 82 76 50 92Z" fill="#6F8F71"/>
+  <path d="M50 92V20M50 44L34 32M50 60L30 48M50 44L66 32M50 60L70 48" stroke="#4C6B57" stroke-width="3.500" stroke-linecap="round" fill="none"/>
+</symbol>
+
+<!-- Illes del mapa -->
+<symbol id="illa-base" viewBox="0 0 300 220">
+  <ellipse cx="150" cy="194" rx="144" ry="22" fill="#9FC3BC" opacity=".7"/>
+  <path d="M18 188C28 150 90 126 150 126C210 126 272 150 282 188C240 208 60 208 18 188Z" fill="#E6D6AE"/>
+  <path d="M48 178C70 140 230 140 252 178C200 170 100 170 48 178Z" fill="#9DB39A"/>
+</symbol>
+<symbol id="illa-berenar" viewBox="0 0 300 220">
+  <use href="#illa-base" width="300" height="220"/>
+  <use href="#arbre" x="70" y="34" width="160" height="120"/>
+  <use href="#poma" x="96" y="66" width="26" height="26"/><use href="#poma" x="140" y="56" width="26" height="26"/><use href="#poma" x="176" y="74" width="26" height="26"/>
+</symbol>
+<symbol id="illa-badia" viewBox="0 0 300 220">
+  <use href="#illa-base" width="300" height="220"/>
+  <use href="#roca" x="40" y="96" width="140" height="87"/>
+  <use href="#tortuga" x="70" y="88" width="44" height="44"/><use href="#tortuga" x="112" y="84" width="40" height="40"/>
+  <use href="#barca" x="170" y="140" width="96" height="57"/>
+</symbol>
+<symbol id="illa-tresor" viewBox="0 0 300 220">
+  <use href="#illa-base" width="300" height="220"/>
+  <use href="#palmera" x="40" y="20" width="110" height="143"/>
+  <use href="#cofre" x="150" y="112" width="92" height="66"/>
+  <path d="M100 168L120 186M120 168L100 186" stroke="#C4523C" stroke-width="7" stroke-linecap="round"/>
+</symbol>
+<symbol id="illa-bosc" viewBox="0 0 300 220">
+  <use href="#illa-base" width="300" height="220"/>
+  <use href="#avet" x="60" y="60" width="66" height="110"/><use href="#avet" x="116" y="24" width="84" height="140"/><use href="#avet" x="186" y="70" width="60" height="100"/>
+  <use href="#papallona-groga" x="216" y="40" width="34" height="34"/>
+</symbol>
+
+<!-- Premis -->
+<symbol id="petxina-rosa" viewBox="0 0 100 100"><path d="M50 88L16 42C28 12 72 12 84 42Z" fill="#E7A99A"/><path d="M50 88L30 22M50 88L42 16M50 88L58 16M50 88L70 22M50 88L20 36M50 88L80 36" stroke="#C97C6C" stroke-width="3"/><path d="M40 84H60L56 94H44Z" fill="#C97C6C"/></symbol>
+<symbol id="petxina-blava" viewBox="0 0 100 100"><path d="M50 88L16 42C28 12 72 12 84 42Z" fill="#9CC0D3"/><path d="M50 88L30 22M50 88L42 16M50 88L58 16M50 88L70 22M50 88L20 36M50 88L80 36" stroke="#5E8AA3" stroke-width="3"/><path d="M40 84H60L56 94H44Z" fill="#5E8AA3"/></symbol>
+<symbol id="petxina-caragol" viewBox="0 0 100 100"><path d="M14 84C14 44 40 16 66 20C88 24 92 52 76 64C62 74 44 66 46 52C48 42 60 40 64 48" fill="#E3A33B" stroke="#B87E22" stroke-width="6" stroke-linecap="round"/><path d="M14 84H86C80 92 20 92 14 84Z" fill="#B87E22"/></symbol>
+<symbol id="petxina-estel" viewBox="0 0 100 100"><path d="M50 6L61 37L94 38L68 58L78 90L50 71L22 90L32 58L6 38L39 37Z" fill="#E07A5A" stroke="#B85A3E" stroke-width="4" stroke-linejoin="round"/><g fill="#F6D4C2"><circle cx="50" cy="30" r="3"/><circle cx="50" cy="50" r="4"/><circle cx="70" cy="46" r="3"/><circle cx="30" cy="46" r="3"/><circle cx="62" cy="68" r="3"/><circle cx="38" cy="68" r="3"/></g></symbol>
+<symbol id="tresor-corona" viewBox="0 0 100 100"><path d="M10 78L6 30L30 52L50 18L70 52L94 30L90 78Z" fill="#E8B84A" stroke="#B9862A" stroke-width="4" stroke-linejoin="round"/><rect x="10" y="74" width="80" height="14" rx="4" fill="#C99A33"/><circle cx="50" cy="60" r="7" fill="#C4523C"/><circle cx="28" cy="66" r="5" fill="#2F6B72"/><circle cx="72" cy="66" r="5" fill="#2F6B72"/></symbol>
+<symbol id="tresor-collaret" viewBox="0 0 100 100"><path d="M12 20C14 62 34 76 50 76C66 76 86 62 88 20" fill="none" stroke="#C9A24A" stroke-width="3"/><g fill="#F6EDDC" stroke="#BCA47E" stroke-width="2"><circle cx="14" cy="34" r="6"/><circle cx="20" cy="50" r="6"/><circle cx="30" cy="63" r="6"/><circle cx="70" cy="63" r="6"/><circle cx="80" cy="50" r="6"/><circle cx="86" cy="34" r="6"/></g><path d="M50 74L62 86L50 98L38 86Z" fill="#C4523C" stroke="#8C3525" stroke-width="3"/></symbol>
+<symbol id="tresor-perla" viewBox="0 0 100 100"><path d="M8 58C8 30 92 30 92 58Z" fill="#8C8A80"/><path d="M8 58C8 88 92 88 92 58Z" fill="#6F6D65"/><path d="M16 58C16 80 84 80 84 58Z" fill="#E7C9C0"/><circle cx="50" cy="60" r="15" fill="#F8F4EC" stroke="#D9CFC0" stroke-width="2"/><circle cx="45" cy="55" r="4" fill="#fff"/></symbol>
+<symbol id="tresor-anell" viewBox="0 0 100 100"><circle cx="50" cy="62" r="28" fill="none" stroke="#E8B84A" stroke-width="10"/><circle cx="50" cy="62" r="28" fill="none" stroke="#B9862A" stroke-width="3"/><path d="M50 12L66 28L50 44L34 28Z" fill="#5E9BC4" stroke="#2F6B72" stroke-width="4" stroke-linejoin="round"/></symbol>
+<symbol id="papallona-groga" viewBox="0 0 100 100"><g fill="#E3A33B"><path d="M48 46C30 10 4 14 8 36C10 50 30 54 48 50Z"/><path d="M52 46C70 10 96 14 92 36C90 50 70 54 52 50Z"/></g><g fill="#C9842A"><path d="M48 52C30 56 16 74 26 84C36 90 46 72 48 56Z"/><path d="M52 52C70 56 84 74 74 84C64 90 54 72 52 56Z"/></g><rect x="46" y="30" width="8" height="52" rx="4" fill="#4A352A"/><path d="M48 32C44 22 40 18 34 16M52 32C56 22 60 18 66 16" stroke="#4A352A" stroke-width="3" fill="none" stroke-linecap="round"/></symbol>
+<symbol id="papallona-blava" viewBox="0 0 100 100"><g fill="#6FA3C4"><path d="M48 46C30 10 4 14 8 36C10 50 30 54 48 50Z"/><path d="M52 46C70 10 96 14 92 36C90 50 70 54 52 50Z"/></g><g fill="#2F6B72"><path d="M48 52C30 56 16 74 26 84C36 90 46 72 48 56Z"/><path d="M52 52C70 56 84 74 74 84C64 90 54 72 52 56Z"/></g><rect x="46" y="30" width="8" height="52" rx="4" fill="#4A352A"/><path d="M48 32C44 22 40 18 34 16M52 32C56 22 60 18 66 16" stroke="#4A352A" stroke-width="3" fill="none" stroke-linecap="round"/></symbol>
+<symbol id="papallona-vermella" viewBox="0 0 100 100"><g fill="#D9664E"><path d="M48 46C30 10 4 14 8 36C10 50 30 54 48 50Z"/><path d="M52 46C70 10 96 14 92 36C90 50 70 54 52 50Z"/></g><g fill="#A23F2D"><path d="M48 52C30 56 16 74 26 84C36 90 46 72 48 56Z"/><path d="M52 52C70 56 84 74 74 84C64 90 54 72 52 56Z"/></g><g fill="#F6EDDC"><circle cx="24" cy="32" r="5"/><circle cx="76" cy="32" r="5"/></g><rect x="46" y="30" width="8" height="52" rx="4" fill="#4A352A"/><path d="M48 32C44 22 40 18 34 16M52 32C56 22 60 18 66 16" stroke="#4A352A" stroke-width="3" fill="none" stroke-linecap="round"/></symbol>
+<symbol id="papallona-verda" viewBox="0 0 100 100"><g fill="#8FB07C"><path d="M48 46C30 10 4 14 8 36C10 50 30 54 48 50Z"/><path d="M52 46C70 10 96 14 92 36C90 50 70 54 52 50Z"/></g><g fill="#4C7A5C"><path d="M48 52C30 56 16 74 26 84C36 90 46 72 48 56Z"/><path d="M52 52C70 56 84 74 74 84C64 90 54 72 52 56Z"/></g><rect x="46" y="30" width="8" height="52" rx="4" fill="#4A352A"/><path d="M48 32C44 22 40 18 34 16M52 32C56 22 60 18 66 16" stroke="#4A352A" stroke-width="3" fill="none" stroke-linecap="round"/></symbol>
+
+<!-- Fons de les illes -->
+<symbol id="fons-mapa-h" viewBox="0 0 1180 820" preserveAspectRatio="xMidYMid slice">
+  <rect width="1180" height="820" fill="#7FAAA3"/>
+  <rect width="1180" height="820" fill="url(#g-mar)" opacity=".35"/>
+  <path d="M80 140H160M900 90H990M300 720H400M760 760H860M1040 520H1120M140 470H210M560 330H620" stroke="#B5D0C8" stroke-width="4" stroke-linecap="round" opacity=".6"/>
+  <g filter="url(#f-paper)"><path d="M-10 640C60 620 120 640 170 680C200 720 190 790 180 830H-10Z" fill="#B8895C"/><path d="M-10 640C60 620 120 640 170 680L160 694C110 660 60 650 -10 664Z" fill="#CFA377"/></g>
+  <use href="#far" x="40" y="560" width="40" height="100"/>
+  <g transform="translate(1060 120)" opacity=".7"><circle r="44" fill="none" stroke="#F6EDDC" stroke-width="3"/><path d="M0 -56L9 0L0 56L-9 0Z" fill="#F6EDDC"/><path d="M-56 0L0 -7L56 0L0 7Z" fill="#F6EDDC" opacity=".7"/></g>
+</symbol>
+<symbol id="fons-mapa-v" viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice">
+  <rect width="390" height="844" fill="#7FAAA3"/>
+  <rect width="390" height="844" fill="url(#g-mar)" opacity=".35"/>
+  <path d="M30 180H80M280 120H340M40 520H90M300 640H360M200 360H240" stroke="#B5D0C8" stroke-width="3" stroke-linecap="round" opacity=".6"/>
+  <g filter="url(#f-paper)"><path d="M-10 760C60 740 140 750 200 790C220 810 220 840 220 850H-10Z" fill="#B8895C"/></g>
+  <use href="#far" x="20" y="700" width="28" height="70"/>
+</symbol>
+<symbol id="fons-badia-h" viewBox="0 0 1180 820" preserveAspectRatio="xMidYMax slice">
+  <rect width="1180" height="260" fill="url(#g-cel)"/>
+  <use href="#nuvol" x="120" y="70" width="240" height="64" opacity=".7"/>
+  <use href="#gavina" x="760" y="110" width="36" height="14"/><use href="#gavina" x="808" y="130" width="26" height="10"/>
+  <rect y="200" width="1180" height="620" fill="url(#g-mar)"/>
+  <g filter="url(#f-paper)"><path d="M820 210C880 170 990 160 1190 180V214H820Z" fill="#B9C8B0"/></g>
+  <use href="#vaixell" x="300" y="110" width="140" height="110"/>
+  <path d="M80 300H200M500 340H600M900 300H1000M200 470H320M700 520H820M1000 440H1100" stroke="#A9CBC4" stroke-width="4" stroke-linecap="round" opacity=".45"/>
+  <g filter="url(#f-paper)"><path d="M-10 690C200 660 420 700 640 690C860 680 1020 650 1190 664V830H-10Z" fill="#E9D3A0"/></g>
+</symbol>
+<symbol id="fons-badia-v" viewBox="0 0 390 844" preserveAspectRatio="xMidYMax slice">
+  <rect width="390" height="140" fill="url(#g-cel)"/>
+  <rect y="100" width="390" height="744" fill="url(#g-mar)"/>
+  <use href="#vaixell" x="250" y="56" width="80" height="62"/>
+  <path d="M30 220H90M260 300H340M40 520H100M280 640H350" stroke="#A9CBC4" stroke-width="3" stroke-linecap="round" opacity=".45"/>
+  <g filter="url(#f-paper)"><path d="M-10 770C100 750 260 780 400 760V850H-10Z" fill="#E9D3A0"/></g>
+</symbol>
+<symbol id="fons-tresor-h" viewBox="0 0 1180 820" preserveAspectRatio="xMidYMax slice">
+  <rect width="1180" height="300" fill="url(#g-cel)"/>
+  <use href="#nuvol" x="700" y="60" width="220" height="58" opacity=".7"/>
+  <rect y="190" width="1180" height="120" fill="#7FAAA3"/>
+  <use href="#vaixell" x="820" y="120" width="120" height="94"/>
+  <g filter="url(#f-paper)">
+    <path d="M-10 262C180 230 420 250 640 256C860 262 1020 236 1190 246V830H-10Z" fill="#EAD5A2"/>
+    <path d="M-10 420C260 380 560 430 820 420C980 414 1100 396 1190 404V830H-10Z" fill="#E0C68C"/>
+  </g>
+  <use href="#palmera" x="0" y="130" width="200" height="260"/>
+  <use href="#palmera" x="1020" y="170" width="160" height="208"/>
+  <g fill="#F6EDDC"><circle cx="300" cy="360" r="5"/><circle cx="312" cy="366" r="3.500"/><circle cx="900" cy="560" r="5"/></g>
+</symbol>
+<symbol id="fons-tresor-v" viewBox="0 0 390 844" preserveAspectRatio="xMidYMax slice">
+  <rect width="390" height="140" fill="url(#g-cel)"/>
+  <rect y="96" width="390" height="60" fill="#7FAAA3"/>
+  <use href="#vaixell" x="240" y="56" width="80" height="62"/>
+  <g filter="url(#f-paper)">
+    <path d="M-10 132C90 108 200 130 400 118V850H-10Z" fill="#EAD5A2"/>
+    <path d="M-10 480C110 450 250 490 400 460V850H-10Z" fill="#E0C68C"/>
+  </g>
+  <use href="#palmera" x="-30" y="100" width="110" height="143"/>
+</symbol>
+<symbol id="fons-bosc-h" viewBox="0 0 1180 820" preserveAspectRatio="xMidYMax slice">
+  <rect width="1180" height="820" fill="#DCE3C8"/>
+  <g filter="url(#f-paper)">
+    <use href="#avet" x="-20" y="60" width="180" height="300"/><use href="#avet" x="120" y="20" width="200" height="333"/>
+    <use href="#avet" x="860" y="30" width="190" height="316"/><use href="#avet" x="1010" y="70" width="180" height="300"/>
+    <use href="#avet" x="420" y="90" width="120" height="200"/><use href="#avet" x="640" y="70" width="140" height="233"/>
+  </g>
+  <g filter="url(#f-paper)">
+    <path d="M-10 300C200 270 420 296 640 300C860 304 1020 280 1190 290V830H-10Z" fill="#B7C79A"/>
+    <path d="M-10 520C260 480 560 530 820 520C980 514 1100 496 1190 504V830H-10Z" fill="#A5B88A"/>
+  </g>
+  <g fill="#F4ECD9"><circle cx="200" cy="420" r="5"/><circle cx="212" cy="426" r="4"/><circle cx="980" cy="460" r="5"/></g>
+  <use href="#papallona-blava" x="300" y="200" width="40" height="40"/>
+</symbol>
+<symbol id="fons-bosc-v" viewBox="0 0 390 844" preserveAspectRatio="xMidYMax slice">
+  <rect width="390" height="844" fill="#DCE3C8"/>
+  <g filter="url(#f-paper)">
+    <use href="#avet" x="-30" y="40" width="120" height="200"/><use href="#avet" x="280" y="30" width="130" height="216"/><use href="#avet" x="140" y="60" width="90" height="150"/>
+  </g>
+  <g filter="url(#f-paper)">
+    <path d="M-10 200C110 180 240 210 400 190V850H-10Z" fill="#B7C79A"/>
+    <path d="M-10 560C110 530 250 570 400 540V850H-10Z" fill="#A5B88A"/>
+  </g>
+</symbol>
 <!-- BANDERINS: premis per al vaixell -->
 <symbol id="banderi-poma" viewBox="0 0 80 50"><path d="M0 2H78L64 25L78 48H0Z" fill="#C4523C"/><path d="M0 38H71L78 48H0Z" fill="#A23F2D" opacity=".45"/><circle cx="28" cy="27" r="11" fill="#F6EDDC"/><path d="M28 16C29 12 32 10 36 10" stroke="#F6EDDC" stroke-width="3" fill="none" stroke-linecap="round"/></symbol>
 <symbol id="banderi-estel" viewBox="0 0 80 50"><path d="M0 2L80 25L0 48Z" fill="#2F6B72"/><path d="M0 34L33.500 38.500L0 48Z" fill="#1F4A52" opacity=".5"/><path d="M22 14L24.900 20.900L32.400 21.500L26.700 26.400L28.400 33.700L22 29.800L15.600 33.700L17.300 26.400L11.600 21.500L19.100 20.900Z" fill="#F6EDDC"/></symbol>

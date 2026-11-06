@@ -41,5 +41,5 @@ export function Dibuix({ id, w, h, className, ...o }: Props) {
   return <img className={className} src={urlDibuix(id, w, h, o)} alt="" draggable={false} decoding="async" />;
 }
 
-/** Manzana con su sombra ya pintada: la sombra no se recalcula al arrastrar. */
-export const Poma = ({ className }: { className?: string }) => <Dibuix id="poma" w={100} h={100} ombra={4} className={className} />;
+/** Objeto que se mueve (manzana, tortuga, moneda) con su sombra ya pintada: no se recalcula al arrastrar. */
+export const Peca = ({ id, className }: { id: string; className?: string }) => <Dibuix id={id} w={100} h={100} ombra={4} className={className} />;

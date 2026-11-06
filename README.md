@@ -2,7 +2,7 @@
 
 Web táctil de aventuras matemáticas para Nicole, pensada sobre todo para el iPad. Especificación: [docs/Les_illes_de_la_Nicole_Diseno_para_Claude.md](docs/Les_illes_de_la_Nicole_Diseno_para_Claude.md).
 
-**Estado: Fase B + niveles.** La misión «El berenar de la tripulació» está completa, con 10 niveles de cantidades. Publicada en https://mguitianl.github.io/les-illes/. Falta la prueba con Nicole: [docs/guion-observacion.md](docs/guion-observacion.md).
+**Estado: mapa de islas.** Puerto → mapa → 4 islas con 4 niveles cada una. Publicada en https://mguitianl.github.io/les-illes/. Falta la prueba con Nicole: [docs/guion-observacion.md](docs/guion-observacion.md).
 
 ## Jugar en el iPad
 
@@ -52,7 +52,13 @@ Estructura de `app/src/`:
   7. Elegir banderín.
 
   El banderín elegido aparece en el barco.
-- 10 niveles con la misma secuencia y otras cantidades, siempre hasta 5 (ver `NIVELLS` en `textos.ts`). Al completar una misión se pasa al nivel siguiente; tras el décimo se vuelve al primero. El adulto puede elegir el nivel. Hay 6 banderines distintos para ganar.
+- **Mapa de islas** (`textos.ts` define niveles, frases y premios):
+  1. **Berenar:** sumar y restar con manzanas (hasta 5). Premio: banderas para el barco.
+  2. **Badia:** subir tortugas a la barca, «¿dónde hay más?» y bajarlas a la playa (resta). Premio: conchas.
+  3. **Tresor:** cofres que se abren con N monedas; las que ya estaban son de plata, Nicole pone las que faltan y dice cuántas eran (2 + ? = 3). Niveles 3 y 4 sin huecos guía. Premio: joyas.
+  4. **Bosc:** memory de cantidades (manzanas, cifras y puntos de dado), de 3 a 6 parejas. Premio: mariposas.
+- Cada isla tiene 4 niveles de dificultad creciente; al completarlos el barco navega a la siguiente. Las islas hechas se pueden repetir. Los premios se ven en el mapa.
+- La zona de adultos permite preparar cualquier nivel de cualquier isla y mide los tirones (fotogramas lentos) de cada pantalla en el dispositivo.
 - Las manzanas se mueven arrastrando o con toque y destino, y se pueden devolver. Un error al arrastrar no cuenta como fallo.
 - Hay tres niveles de ayuda: señalar, contar juntos y demostración. Nunca restan premios.
 - El resultado de cada operación (3 + 1, 4 − 2) no aparece hasta que Nicole responde.
@@ -66,5 +72,5 @@ Estructura de `app/src/`:
 - **La voz es provisional:** síntesis Montse de macOS. Hay que decidir la definitiva antes de la prueba con Nicole.
 - **Necesita internet:** no hay modo sin conexión. La voz de cada nivel se descarga al empezarlo.
 - **El guardado está ligado a la dirección:** la web publicada y la del Mac son partidas distintas. Safari y el icono de inicio guardan por separado.
-- **Progresión simple:** los niveles avanzan en orden al completar cada misión; todavía no se adaptan a las ayudas usadas (diseño §8) ni pasan de 5.
+- **Progresión simple:** los niveles avanzan en orden; todavía no se adaptan a las ayudas usadas (diseño §8). Cantidades hasta 6.
 - **Fuera de esta fase:** sin efectos ni música, la misión de «nos falta una» y los demás juegos (memory, tablero, cartas).

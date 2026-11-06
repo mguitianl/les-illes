@@ -126,7 +126,7 @@ img { display: block; width: 100%; height: 100%; pointer-events: none; -webkit-u
 }
 .zona { position: relative; display: flex; align-items: flex-end; justify-content: center; min-height: 0; }
 .zona-origen { grid-area: origen; }
-.zona-cistella { grid-area: cistella; flex-direction: column; align-items: center; gap: 2px; }
+.zona-principal { grid-area: cistella; flex-direction: column; align-items: center; gap: 2px; }
 .targetes { grid-area: cartes; display: none; gap: 10px; align-items: center; justify-content: center; pointer-events: none; }
 .targeta { pointer-events: auto; }
 .lateral { grid-area: lateral; display: flex; align-items: flex-end; justify-content: flex-end; gap: 8px; }
@@ -162,7 +162,7 @@ img { display: block; width: 100%; height: 100%; pointer-events: none; -webkit-u
   }
   .zona { align-items: center; }
   .zona-origen[data-zona="arbre"], .zona-origen[data-zona="terra"] { align-items: flex-end; }
-  .zona-cistella { justify-content: flex-end; padding-bottom: 3vh; }
+  .zona-principal { justify-content: flex-end; padding-bottom: 3vh; }
   .lateral { flex-direction: column; align-items: center; justify-content: flex-end; width: calc(var(--poma) * 1.65); gap: 12px; }
   .lateral .guineu-boto { width: calc(var(--poma) * 1.6); }
 }
@@ -265,8 +265,7 @@ img { display: block; width: 100%; height: 100%; pointer-events: none; -webkit-u
 .banderi-vaixell:not(.alzat) use { transform: translateY(30px); opacity: 0; }
 @media (prefers-reduced-motion: reduce) { .banderi-vaixell use { transition: none; } }
 .rotul { cursor: default; }
-/* La pantalla de banderines no necesita la cesta */
-.app[data-moment="banderi"] .zona-cistella { display: none; }
+
 
 /* ---------- Zona de adultos ---------- */
 .adults {
@@ -314,3 +313,75 @@ img { display: block; width: 100%; height: 100%; pointer-events: none; -webkit-u
   .targeta .grup { grid-template-columns: repeat(3, calc(var(--poma) * .36)); grid-auto-rows: calc(var(--poma) * .36); }
   .targeta .grup img { width: calc(var(--poma) * .36); height: calc(var(--poma) * .36); }
 }
+
+/* ---------- Islas: zonas anchas (roca, barca, playa, arena, cofre) ---------- */
+.ancora-ample { width: calc(var(--poma) * 5.2); }
+@media (orientation: portrait) { .ancora-ample { width: min(calc(var(--poma) * 5.6), 92vw); } }
+.zona.triada .ancora::after {
+  content: ""; position: absolute; inset: -4%; border-radius: 44%;
+  border: 6px solid var(--petroli); box-shadow: 0 0 0 4px var(--paper); pointer-events: none;
+}
+.equacio .interrogant {
+  display: inline-grid; place-items: center; min-width: 1.1em; padding: 0 .1em; border-radius: 10px;
+  border: 3px dashed var(--petroli); color: var(--petroli);
+}
+.illa-badia .equacio, .illa-tresor .equacio { color: var(--tinta); }
+.illa-badia .rotul { color: var(--tinta); }
+
+/* ---------- Puerto: timón ---------- */
+.port-timo { aspect-ratio: 1; width: min(30vw, 24vh); }
+@media (orientation: landscape) { .port-timo { width: min(17vw, 26vh); margin-bottom: 3vh; } }
+.port-timo > img { animation: gira 6s ease-in-out infinite alternate; }
+@keyframes gira { from { transform: rotate(-12deg); } to { transform: rotate(12deg); } }
+@media (prefers-reduced-motion: reduce) { .port-timo > img { animation: none; } }
+
+/* ---------- Memory ---------- */
+.memory {
+  grid-column: 1 / -1; grid-row: 1 / 3; container-type: size; min-height: 0;
+  display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: 12px;
+  align-content: center; justify-items: center; padding: 4px;
+}
+@media (orientation: landscape) { .memory { grid-column: 1 / 3; } }
+.carta {
+  height: calc((100cqh - (var(--files) - 1) * 12px - 8px) / var(--files)); aspect-ratio: 3 / 4; max-width: 100%;
+  position: relative;
+}
+.carta-revers, .carta-cara {
+  position: absolute; inset: 0; border-radius: 14px;
+  display: grid; place-items: center; box-shadow: 0 3px 0 rgba(58,46,31,.25);
+  animation: volta .22s ease-out 1;
+}
+@keyframes volta { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.carta-revers { background: #7FA078; border: 4px solid var(--paper); }
+.carta-revers img { width: 60%; height: 60%; }
+.carta-cara { background: var(--paper); border: 4px solid #BCA47E; }
+.carta.feta .carta-cara { border-color: #E3A33B; box-shadow: 0 0 0 3px #E3A33B, 0 3px 0 rgba(58,46,31,.25); }
+.cara-xifra { font: 700 min(60cqh, 30cqw, 80px)/1 var(--xifres); font-size: clamp(30px, 9vmin, 84px); color: var(--tinta); }
+.cara-grup { display: flex; flex-wrap: wrap; justify-content: center; align-content: center; width: 86%; height: 86%; gap: 2%; }
+.cara-grup img { width: 40%; height: auto; aspect-ratio: 1; }
+.cara-grup.n1 img { width: 62%; }
+.cara-punts { position: relative; width: 78%; aspect-ratio: 1; }
+.cara-punts i { position: absolute; width: 20%; aspect-ratio: 1; border-radius: 50%; background: var(--coral); transform: translate(-50%, -50%); }
+@media (prefers-reduced-motion: reduce) { .carta-revers, .carta-cara { animation: none; } }
+
+/* ---------- Mapa ---------- */
+.mapa-capa { position: absolute; inset: 0; width: 100%; height: 100%; }
+.ruta { fill: none; stroke: #F6EDDC; stroke-width: 6; stroke-dasharray: 1 18; stroke-linecap: round; opacity: .85; }
+.illa-mapa { cursor: pointer; }
+.illa-mapa.tancada > use:not(.boira) { opacity: .5; }
+.boira { opacity: .95; }
+.anell {
+  fill: rgba(246,237,220,.3); stroke: #F6EDDC; stroke-width: 5; stroke-dasharray: 14 10;
+  transform-box: fill-box; transform-origin: center; animation: pols 1.6s ease-in-out 3;
+}
+@keyframes pols { 50% { transform: scale(1.08); } }
+.progres circle { fill: rgba(246,237,220,.55); stroke: var(--tinta); stroke-width: 2; }
+.progres circle.fet { fill: #E3A33B; }
+.premi-nou { transform-box: fill-box; transform-origin: center; animation: apareix 1.4s cubic-bezier(.3,1.6,.5,1) 1; }
+@keyframes apareix { 0% { transform: scale(0); } 60% { transform: scale(1.5); } 100% { transform: scale(1); } }
+.vaixell-mapa { pointer-events: none; transition: transform 2.6s ease-in-out; }
+@media (prefers-reduced-motion: reduce) { .anell, .premi-nou { animation: none; } .vaixell-mapa { transition: none; } }
+
+/* Zona de adultos: niveles por isla */
+.illa-nivells h4 { font: 600 16px/1.3 var(--xifres); margin: 16px 0 0; }
+.targeta-banderi > svg:first-child { pointer-events: none; }

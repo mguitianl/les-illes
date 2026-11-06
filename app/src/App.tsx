@@ -1,10 +1,14 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
-import { ambIntent, carrega, completaMissio, desa, nou, type Avis, type Desat } from './logica/desat';
-import { N_PASSOS, aplica, clipsNivell, inicia, pasActual, type Banderi, type EstatMissio, type Intent } from './logica/missio';
+import {
+  ambIntent, carrega, completaMissio, desa, illaActual, illaCompleta, nivellPer, nou, type Avis, type Desat,
+} from './logica/desat';
+import { NIVELLS_ILLA, aplica, clipsMissio, esUltimPas, inicia, pasActual, type EstatMissio, type Intent } from './logica/missio';
 import { veu } from './audio/veu';
+import * as rendiment from './rendiment';
 import Barra from './ui/Barra';
 import Port from './ui/Port';
-import Berenar from './ui/Berenar';
+import Mapa from './ui/Mapa';
+import Escena from './ui/Escena';
 import Adults from './ui/Adults';
 
 function magatzem(): Pick<Storage, 'getItem' | 'setItem' | 'removeItem'> {
@@ -23,7 +27,7 @@ function magatzem(): Pick<Storage, 'getItem' | 'setItem' | 'removeItem'> {
 function normalitza(d: Desat): Desat {
   const m = d.missio;
   if (!m || m.fase !== 'exit') return d;
-  if (m.pas >= N_PASSOS - 1) return completaMissio(d, m.banderi);
+  if (esUltimPas(m)) return completaMissio(d, m.premi);
   return { ...d, missio: aplica(m, { t: 'seguent' }) };
 }
 
@@ -31,8 +35,10 @@ export interface Api {
   posaMissio(e: EstatMissio): void;
   registra(i: Intent): void;
   marcaTutorial(): void;
-  acaba(b: Banderi | null): void;
+  acaba(premi: string | null): void;
 }
+
+type Vista = 'port' | 'mapa' | 'joc';
 
 export default function App({ sensedemo }: { sensedemo: boolean }) {
   const [mag] = useState(magatzem);
@@ -40,8 +46,9 @@ export default function App({ sensedemo }: { sensedemo: boolean }) {
   const [desat, setDesat] = useState<Desat>(() => normalitza(carregat.desat));
   const [avis, setAvis] = useState<Avis>(carregat.avis);
   const [desatOk, setDesatOk] = useState(true);
-  const [vista, setVista] = useState<'port' | 'berenar'>('port');
-  const [final, setFinal] = useState(false);
+  const [vista, setVista] = useState<Vista>('port');
+  /** Al volver al mapa tras una misión: premio nuevo y, si se completó la isla, el viaje del barco. */
+  const [arribada, setArribada] = useState<{ premi: string | null; navega: { de: number; a: number } | null } | null>(null);
   const [adults, setAdults] = useState(false);
   const desatRef = useRef(desat);
   desatRef.current = desat;
@@ -53,8 +60,16 @@ export default function App({ sensedemo }: { sensedemo: boolean }) {
 
   useEffect(() => { setDesatOk(desa(mag, desat)); }, [desat, mag]);
   useEffect(() => { veu.habilitada = desat.preferencies.veu; }, [desat.preferencies.veu]);
-  const nivellActiu = desat.missio?.nivell ?? desat.nivell;
-  useEffect(() => { veu.precarrega(['silenci', ...clipsNivell(nivellActiu)]); }, [nivellActiu]);
+
+  // Voz de la misión siguiente, descargada por adelantado.
+  const actual = illaActual(desat);
+  const properaIlla = desat.missio?.illa ?? actual;
+  const properNivell = desat.missio?.nivell ?? nivellPer(desat, actual);
+  useEffect(() => { veu.precarrega(['silenci', ...clipsMissio(properaIlla, properNivell)]); }, [properaIlla, properNivell]);
+
+  // Medidor de tirones por pantalla.
+  const on = vista === 'joc' && desat.missio ? `isla ${desat.missio.illa + 1} · nivel ${desat.missio.nivell + 1}` : vista === 'mapa' ? 'mapa' : 'puerto';
+  useEffect(() => { rendiment.comenca(on); return () => rendiment.acaba(); }, [on]);
 
   // Primer gesto: activa el audio y, si no ha empezado nada, repite la instrucción.
   useEffect(() => {
@@ -75,22 +90,31 @@ export default function App({ sensedemo }: { sensedemo: boolean }) {
     posaMissio: useCallback((e: EstatMissio) => setDesat(d => ({ ...d, missio: e })), []),
     registra: useCallback((i: Intent) => setDesat(d => ambIntent(d, i)), []),
     marcaTutorial: useCallback(() => setDesat(d => ({ ...d, tutorialVist: true })), []),
-    acaba: useCallback((b: Banderi | null) => {
-      setDesat(d => completaMissio(d, b));
-      setFinal(true);
-      setVista('port');
+    acaba: useCallback((premi: string | null) => {
+      const d = desatRef.current;
+      const abans = illaActual(d);
+      const despres = completaMissio(d, premi);
+      const ara = illaActual(despres);
+      setDesat(despres);
+      setArribada({ premi, navega: ara !== abans && illaCompleta(despres, abans) ? { de: abans, a: ara } : null });
+      setVista('mapa');
     }, []),
   };
 
-  const entra = () => {
-    setDesat(d => (d.missio ? normalitza(d) : { ...d, missio: inicia(d.nivell) }));
-    setFinal(false);
-    setVista('berenar');
+  const entraIlla = (i: number) => {
+    setDesat(d => {
+      const n = normalitza(d);
+      if (n.missio && n.missio.illa === i) return n;
+      return { ...n, missio: inicia(i, nivellPer(n, i), n.premis) };
+    });
+    setArribada(null);
+    setVista('joc');
   };
   const casa = () => {
     veu.calla();
     setDesat(d => normalitza(d));
-    setVista('port');
+    setArribada(null);
+    setVista(v => (v === 'joc' ? 'mapa' : 'port'));
   };
 
   (window as unknown as { __illes: unknown }).__illes = {
@@ -99,20 +123,18 @@ export default function App({ sensedemo }: { sensedemo: boolean }) {
   };
 
   const missio = desat.missio;
-  const pas = vista === 'berenar' && missio ? pasActual(missio) : null;
-  const enCurs = !!missio;
-  const rotul = pas ? pas.rotul : final ? 'El berenar està a punt' : enCurs ? 'Continuem el berenar?' : 'Preparem el berenar?';
+  const pas = vista === 'joc' && missio ? pasActual(missio) : null;
+  const rotul = pas ? pas.rotul : vista === 'mapa' ? 'On anem?' : 'Salpem?';
+  const moment = pas ? (pas.tipus === 'premi' ? 'premi' : pas.id) : vista;
 
   return (
-    <div className="app" data-moment={pas ? pas.id : 'port'}>
-      {vista === 'port' || !missio ? (
-        <Port banderi={desat.banderiActiu} veuInicial={final ? 'final' : enCurs ? 'continuem' : 'port'} alzaBanderi={final} onEntra={entra} />
-      ) : (
-        <Berenar missio={missio} tutorialVist={desat.tutorialVist} sensedemo={sensedemo} api={api} />
-      )}
+    <div className="app" data-moment={moment}>
+      {vista === 'port' && <Port banderi={desat.banderiActiu} veuInicial="port" alzaBanderi={false} onEntra={() => { setArribada(null); setVista('mapa'); }} />}
+      {vista === 'mapa' && <Mapa desat={desat} navega={arribada?.navega ?? null} premiNou={arribada?.premi ?? null} onIlla={entraIlla} />}
+      {vista === 'joc' && missio && <Escena key={`${missio.illa}-${missio.nivell}`} missio={missio} tutorialVist={desat.tutorialVist} sensedemo={sensedemo} api={api} />}
       <Barra
         rotul={rotul}
-        mostraCasa={vista === 'berenar'}
+        mostraCasa={vista !== 'port'}
         onCasa={casa}
         parlant={estatVeu[0] === '1'}
         fallida={estatVeu[1] === '1'}
@@ -126,9 +148,17 @@ export default function App({ sensedemo }: { sensedemo: boolean }) {
           veuFallida={estatVeu[1] === '1'}
           onTanca={() => { setAdults(false); setAvis('cap'); }}
           onCanvia={setDesat}
-          onNivell={n => { setDesat(d => ({ ...d, nivell: n, missio: null })); setVista('port'); setFinal(false); }}
-          onReiniciaMissio={() => { setDesat(d => ({ ...d, missio: null })); setVista('port'); setFinal(false); }}
-          onEsborraTot={() => { setDesat(nou()); setVista('port'); setFinal(false); }}
+          onNivell={(illa, nivell) => {
+            // Deja preparada esa misión (al tocar la isla empieza) y abre las islas anteriores; no borra progreso.
+            setDesat(d => ({
+              ...d,
+              progres: d.progres.map((p, j) => (j < illa ? Math.max(p, NIVELLS_ILLA) : p)),
+              missio: inicia(illa, nivell, d.premis),
+            }));
+            setArribada(null); setVista('mapa'); setAdults(false); setAvis('cap');
+          }}
+          onReiniciaMissio={() => { setDesat(d => ({ ...d, missio: null })); setArribada(null); setVista('mapa'); }}
+          onEsborraTot={() => { setDesat(nou()); setArribada(null); setVista('port'); }}
         />
       )}
       <div className="gra" aria-hidden="true" />
