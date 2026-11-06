@@ -37,6 +37,7 @@ html, body {
 button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; touch-action: manipulation; }
 button:focus-visible { outline: 3px solid var(--petroli); outline-offset: 3px; }
 svg { display: block; width: 100%; height: 100%; overflow: visible; }
+img { display: block; width: 100%; height: 100%; pointer-events: none; -webkit-user-drag: none; }
 [hidden] { display: none !important; }
 
 .escena { position: fixed; inset: 0; overflow: hidden; }
@@ -45,7 +46,7 @@ svg { display: block; width: 100%; height: 100%; overflow: visible; }
 @media (orientation: portrait) { .fons-h { display: none; } .fons-v { display: block; } }
 
 .sonda-poma { position: absolute; visibility: hidden; width: var(--poma); height: 1px; pointer-events: none; }
-.gra { position: fixed; inset: 0; pointer-events: none; background: url(../img/gra.png); z-index: 40; }
+.gra { position: fixed; inset: 0; pointer-events: none; background: url(../img/gra.png); z-index: 40; will-change: transform; }
 .segell-maqueta {
   position: fixed; left: 50%; transform: translateX(-50%);
   bottom: max(3px, env(safe-area-inset-bottom));
@@ -138,8 +139,8 @@ svg { display: block; width: 100%; height: 100%; overflow: visible; }
 .mariner { width: calc(var(--poma) * 1.9); height: auto; aspect-ratio: 220/300; flex: none; margin-right: calc(var(--poma) * -.25); }
 .mirall-h { transform: scaleX(-1); }
 /* Sombra de contacto: objetos de papel apoyados en la escena */
-.ancora > svg, .mariner, .guineu-boto > svg, .port-cistella > svg { filter: drop-shadow(0 5px 4px rgba(58,46,31,.22)); }
-.guineu-boto:active > svg, .port-cistella:active > svg { transform: translateY(2px); }
+.ancora > img, .mariner, .guineu-boto > img, .port-cistella > img { filter: drop-shadow(0 5px 4px rgba(58,46,31,.22)); }
+.guineu-boto:active > img, .port-cistella:active > img { transform: translateY(2px); }
 .mirall-h:active { transform: scaleX(-1) translateY(2px); }
 
 @media (orientation: portrait) {
@@ -178,12 +179,13 @@ svg { display: block; width: 100%; height: 100%; overflow: visible; }
   width: var(--poma); height: var(--poma); min-width: 48px; min-height: 48px;
   pointer-events: auto; touch-action: none;
   transition: transform .3s cubic-bezier(.3,.8,.35,1);
-  filter: drop-shadow(0 2px 1.5px rgba(36,30,20,.35));
+  /* Capa propia: moverla no obliga a repintar la escena. La sombra va dentro de la imagen. */
+  will-change: transform;
 }
-.poma svg { transform: scale(.94); transition: transform .12s; }
+.poma img { transition: transform .12s; }
 .poma.sense-trans { transition: none; }
 .poma.seleccionada { z-index: 3; }
-.poma.seleccionada svg { transform: scale(1.1); }
+.poma.seleccionada img { transform: scale(1.16); }
 .poma.seleccionada::before, .poma.arrossegada::before {
   content: ""; position: absolute; inset: -6%; border-radius: 50%;
   background: rgba(251,245,231,.92);
@@ -192,7 +194,7 @@ svg { display: block; width: 100%; height: 100%; overflow: visible; }
 }
 .poma { isolation: isolate; }
 .poma.arrossegada { transition: none; z-index: 5; cursor: grabbing; }
-.poma.arrossegada svg { transform: scale(1.14); }
+.poma.arrossegada img { transform: scale(1.2); }
 .insignia {
   position: absolute; z-index: 4; right: -2%; top: -6%;
   min-width: 30px; height: 30px; border-radius: 50%;
@@ -208,10 +210,10 @@ svg { display: block; width: 100%; height: 100%; overflow: visible; }
   background: rgba(251,245,231,.35);
 }
 .fantasma { position: absolute; left: 0; top: 0; width: var(--poma); height: var(--poma); pointer-events: none; z-index: 8; transition: transform .95s cubic-bezier(.45,.05,.4,1); }
-.fantasma > svg:first-child { opacity: .85; }
+.fantasma > img { opacity: .85; }
 .fantasma .pota { position: absolute; width: 62%; height: 62%; right: -22%; bottom: -26%; }
 @media (prefers-reduced-motion: reduce) {
-  .poma, .fantasma, .poma svg, .boto { transition: none; }
+  .poma, .fantasma, .poma img, .boto { transition: none; }
   .port-cistella.resalta::after, .zona.destacada .ancora::after { animation: none; }
 }
 
@@ -237,8 +239,8 @@ svg { display: block; width: 100%; height: 100%; overflow: visible; }
   transition: transform .12s;
 }
 .targeta .xifra { font: 700 clamp(30px, 4vmin + 12px, 52px)/1 var(--xifres); color: var(--tinta); }
-.targeta .grup { display: grid; grid-template-columns: repeat(2, calc(var(--poma) * .56)); grid-auto-rows: calc(var(--poma) * .56); gap: 2px; }
-.targeta .grup svg { width: calc(var(--poma) * .56); height: calc(var(--poma) * .56); }
+.targeta .grup { display: grid; grid-template-columns: repeat(3, calc(var(--poma) * .46)); grid-auto-rows: calc(var(--poma) * .46); gap: 2px; justify-content: center; }
+.targeta .grup img { width: calc(var(--poma) * .46); height: calc(var(--poma) * .46); }
 .targeta:active { transform: scale(.97); }
 .targeta.triada { border: 5px solid var(--petroli); transform: translateY(-4px); box-shadow: 0 6px 0 rgba(31,74,82,.3); padding: 4px 6px; }
 .targeta .marca { display: none; position: absolute; right: -11px; top: -11px; width: 30px; height: 30px; border-radius: 50%; background: var(--petroli); color: var(--paper); padding: 5px; }
@@ -301,3 +303,14 @@ svg { display: block; width: 100%; height: 100%; overflow: visible; }
 .teclat button { height: 72px; border-radius: 14px; background: #EFE4CC; border: 2px solid #BCA47E; font: 600 28px/1 var(--xifres); }
 .teclat button.premut { background: var(--petroli); color: var(--paper); }
 .enllac { min-height: 48px; padding: 8px 16px; text-decoration: underline; font: 500 16px/1.2 var(--xifres); }
+
+.nivells { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; margin-top: 10px; }
+.nivell { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-height: 56px; padding: 8px 12px; border-radius: 12px; background: #EFE4CC; border: 2px solid #BCA47E; text-align: left; font: 15px/1.3 var(--xifres); }
+.nivell strong { font-size: 18px; }
+.nivell.actiu { background: var(--petroli); color: var(--paper); border-color: var(--petroli); }
+/* Móvil vertical: hasta 5 manzanas por tarjeta sin salirse */
+@media (orientation: portrait) {
+  .targeta { gap: 4px; padding: 6px; }
+  .targeta .grup { grid-template-columns: repeat(3, calc(var(--poma) * .36)); grid-auto-rows: calc(var(--poma) * .36); }
+  .targeta .grup img { width: calc(var(--poma) * .36); height: calc(var(--poma) * .36); }
+}

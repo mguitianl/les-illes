@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type PointerEvent as RPointerEvent } from 'react';
 import { veu, espera } from '../audio/veu';
 import { placaLliure, type Objecte, type ZonaId } from '../logica/quantitats';
-import { PASSOS, aplica, confirma, pasActual, type EstatMissio, type Pas, type Terme } from '../logica/missio';
+import { N_PASSOS, aplica, confirma, pasActual, type EstatMissio, type Pas, type Terme } from '../logica/missio';
+import { Dibuix, Poma } from '../art/Dibuix';
 import type { Api } from '../App';
 
 /** Posición de cada plaza dentro del dibujo de la zona, en %. */
@@ -9,7 +10,7 @@ const PLACES: Record<ZonaId, [number, number][]> = {
   cistella: [[24, 44], [50, 42], [76, 44], [37, 75], [63, 75]],
   safata: [[24, 44], [50, 42], [76, 44], [37, 75], [63, 75]],
   arbre: [[31.25, 33.3], [50, 33.3], [68.75, 33.3], [40.6, 58.3], [59.4, 58.3]],
-  terra: [[50, 58]],
+  terra: [[50, 58], [27, 64], [73, 64]],
 };
 
 interface Rect { x: number; y: number; w: number; h: number }
@@ -173,7 +174,7 @@ export default function Berenar({ missio, tutorialVist, sensedemo, api }: Props)
     if (!muntat.current) return;
     const ara = missioRef.current;
     if (ara.pas !== m.pas || ara.fase !== 'exit') return;
-    if (m.pas === PASSOS.length - 1) api.acaba(r.estat.banderi);
+    if (m.pas === N_PASSOS - 1) api.acaba(r.estat.banderi);
     else api.posaMissio(aplica(ara, { t: 'seguent' }));
   };
 
@@ -277,29 +278,29 @@ export default function Berenar({ missio, tutorialVist, sensedemo, api }: Props)
       {contingut}
     </section>
   );
-  const ancora = (z: ZonaId, cls: string, simbol: string, vb: string) => (
+  const ancora = (z: ZonaId, cls: string, simbol: string, w: number, h: number) => (
     <div className={`ancora ${cls}`} ref={el => { ancores.current[z] = el; }}>
-      <svg viewBox={vb}><use href={`#${simbol}`} /></svg>
+      <Dibuix id={simbol} w={w} h={h} />
     </div>
   );
   if (!visibles.has('arbre')) ancores.current.arbre = null;
 
   return (
     <main id="berenar" className="escena" ref={arrel}>
-      <svg className="fons fons-h" aria-hidden="true"><use href="#fons-berenar-h" /></svg>
-      <svg className="fons fons-v" aria-hidden="true"><use href="#fons-berenar-v" /></svg>
+      <Dibuix className="fons fons-h" id="fons-berenar-h" w={1180} h={820} par="xMidYMax slice" />
+      <Dibuix className="fons fons-v" id="fons-berenar-v" w={390} h={844} par="xMidYMax slice" />
       <div ref={sonda} className="sonda-poma" />
 
       <div className="taulell" onClick={e => { if (e.target === e.currentTarget) setSeleccio(null); }}>
-        {zona('arbre', 'zona-origen', ancora('arbre', 'ancora-arbre', 'arbre', '0 0 480 360'))}
-        {zona('terra', 'zona-origen', ancora('terra', 'ancora-mata', 'mata', '0 0 320 240'))}
+        {zona('arbre', 'zona-origen', ancora('arbre', 'ancora-arbre', 'arbre', 480, 360))}
+        {zona('terra', 'zona-origen', ancora('terra', 'ancora-mata', 'mata', 320, 240))}
         {zona('safata', 'zona-origen zona-mariner', <>
-          <svg className="mariner" viewBox="0 0 220 300" aria-hidden="true"><use href="#mariner" /></svg>
-          {ancora('safata', 'ancora-recipient', 'safata', '0 0 400 290')}
+          <Dibuix className="mariner" id="mariner" w={220} h={300} />
+          {ancora('safata', 'ancora-recipient', 'safata', 400, 290)}
         </>)}
         {zona('cistella', 'zona-cistella', <>
           <Equacio termes={equacio} />
-          {ancora('cistella', 'ancora-recipient', 'cistella', '0 0 400 290')}
+          {ancora('cistella', 'ancora-recipient', 'cistella', 400, 290)}
         </>)}
 
         {p.tipus === 'triar' && (
@@ -307,7 +308,7 @@ export default function Berenar({ missio, tutorialVist, sensedemo, api }: Props)
             {p.opcions.map(v => (
               <button key={v} className={`targeta${missio.triada === v ? ' triada' : ''}${visual.resalta === v ? ' resaltada' : ''}`} aria-label={String(v)}
                 onClick={() => { if (ocupat.current) return; interromp(); netejaAjuda(); api.posaMissio(aplica(missioRef.current, { t: 'triar', valor: v })); }}>
-                <span className="grup">{Array.from({ length: v }, (_, i) => <svg key={i} viewBox="0 0 100 100"><use href="#poma" /></svg>)}</span>
+                <span className="grup">{Array.from({ length: v }, (_, i) => <Dibuix key={i} id="poma" w={100} h={100} />)}</span>
                 <span className="xifra">{v}</span>
                 <svg className="marca" viewBox="0 0 48 48"><use href="#i-check" /></svg>
               </button>
@@ -328,7 +329,7 @@ export default function Berenar({ missio, tutorialVist, sensedemo, api }: Props)
 
         <div className="lateral">
           <button id="boto-ajuda" className="guineu-boto" aria-label="Ajuda" onClick={ajuda}>
-            <svg className="mirall-h" viewBox="0 0 200 250"><use href="#guineu" /></svg>
+            <Dibuix className="mirall-h" id="guineu" w={200} h={250} />
           </button>
           {mostraConfirma && (
             <button id="confirma" className="boto boto-confirma" aria-label="Ja està" onClick={confirmar}>
@@ -348,14 +349,14 @@ export default function Berenar({ missio, tutorialVist, sensedemo, api }: Props)
           return (
             <button key={o.id} className={`poma${seleccio === o.id ? ' seleccionada' : ''}`} aria-label="Poma" data-t={t} style={{ transform: t }}
               onPointerDown={e => baixa(e, o)}>
-              <svg viewBox="0 0 100 100"><use href="#poma" /></svg>
+              <Poma />
               {visual.insignies[`o${o.id}`] && <span className="insignia">{visual.insignies[`o${o.id}`]}</span>}
             </button>
           );
         })}
         {visual.fantasma && (
           <div className="fantasma" style={{ transform: transf(visual.fantasma) }}>
-            <svg viewBox="0 0 100 100"><use href="#poma" /></svg>
+            <Poma />
             <svg className="pota" viewBox="0 0 60 60"><use href="#i-pota" /></svg>
           </div>
         )}

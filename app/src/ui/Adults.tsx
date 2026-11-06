@@ -1,12 +1,26 @@
 import { useState } from 'react';
 import type { Avis, Desat } from '../logica/desat';
-import { PASSOS, type TipusAjuda } from '../logica/missio';
+import { N_NIVELLS, N_PASSOS, pasActual, type TipusAjuda } from '../logica/missio';
+import { NIVELLS } from '../logica/textos';
 
 const PARAULES = ['', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve'];
-const NOM_PAS: Record<string, string> = {
-  recull: 'Recoger 3', afegeix: 'Añadir 1', total: '¿Cuántas hay? (3 + 1)',
-  dona: 'Entregar 2 de 4', queden: '¿Cuántas quedan? (4 − 2)', banderi: 'Elegir banderín',
+function nomPas(id: string, q: number[] = []): string {
+  const [a, b] = q;
+  switch (id) {
+    case 'recull': return `Recoger ${a}`;
+    case 'afegeix': return `Añadir ${b} (${a} + ${b})`;
+    case 'total': return `¿Cuántas hay? (${a} + ${b})`;
+    case 'dona': return `Entregar ${b} de ${a}`;
+    case 'queden': return `¿Cuántas quedan? (${a} − ${b})`;
+    case 'banderi': return 'Elegir banderín';
+    default: return id;
+  }
+}
+const NOM_BANDERI: Record<string, string> = {
+  'banderi-poma': 'coral con manzana', 'banderi-estel': 'azul con estrella', 'banderi-cor': 'amarillo con corazón',
+  'banderi-lluna': 'noche con luna', 'banderi-peix': 'verde con pez', 'banderi-ona': 'olas',
 };
+const descripcioNivell = (n: number) => { const [a, b, c] = NIVELLS[n]; return `${a} + ${b} = ${a + b} · ${a + b} − ${c} = ${a + b - c}`; };
 const NOM_AJUDA: Record<TipusAjuda, string> = { cap: 'Ninguna', senyalar: 'Señalar', comptar: 'Contar juntos', demostrar: 'Demostración' };
 const NOM_AVIS: Partial<Record<Avis, string>> = {
   danyat: 'Los datos guardados estaban dañados. Se ha empezado de nuevo y se ha conservado una copia en este navegador.',
@@ -20,6 +34,7 @@ interface Props {
   veuFallida: boolean;
   onTanca(): void;
   onCanvia(f: (d: Desat) => Desat): void;
+  onNivell(n: number): void;
   onReiniciaMissio(): void;
   onEsborraTot(): void;
 }
@@ -80,10 +95,11 @@ export default function Adults(props: Props) {
         <h3>Resumen</h3>
         <dl className="resum">
           <dt>Misiones completadas</dt><dd>{desat.missionsCompletades}</dd>
-          <dt>Partida en curso</dt><dd>{missio ? `Paso ${missio.pas + 1} de ${PASSOS.length}: ${NOM_PAS[PASSOS[missio.pas]?.id] ?? ''}` : 'Ninguna'}</dd>
+          <dt>Partida en curso</dt><dd>{missio ? `Nivel ${missio.nivell + 1} · paso ${missio.pas + 1} de ${N_PASSOS}: ${nomPas(pasActual(missio)?.id ?? '', pasActual(missio)?.quantitats)}` : 'Ninguna'}</dd>
+          <dt>Próxima misión</dt><dd>{missio ? 'Al terminar la actual, el nivel siguiente' : `Nivel ${desat.nivell + 1} de ${N_NIVELLS} (${descripcioNivell(desat.nivell)})`}</dd>
           <dt>Pasos resueltos sin ayuda</dt><dd>{independents}</dd>
           <dt>Pasos resueltos con ayuda</dt><dd>{ambAjuda}</dd>
-          <dt>Banderines</dt><dd>{desat.adorns.length ? desat.adorns.map(b => (b === 'banderi-poma' ? 'Coral con manzana' : 'Azul con estrella')).join(', ') : 'Todavía ninguno'}</dd>
+          <dt>Banderines</dt><dd>{desat.adorns.length ? desat.adorns.map(b => NOM_BANDERI[b] ?? b).join(', ') : 'Todavía ninguno'}</dd>
         </dl>
         <p className="nota">Son registros de lo que ha pasado, no una medida de capacidad. Una sesión no demuestra aprendizaje.</p>
       </section>
@@ -93,12 +109,13 @@ export default function Adults(props: Props) {
         {intents.length === 0 ? <p>Todavía no hay registros.</p> : (
           <div className="taula-scroll">
             <table>
-              <thead><tr><th>Cuándo</th><th>Paso</th><th>Respuesta</th><th>Primera respuesta</th><th>Ayuda</th></tr></thead>
+              <thead><tr><th>Cuándo</th><th>Nivel</th><th>Paso</th><th>Respuesta</th><th>Primera respuesta</th><th>Ayuda</th></tr></thead>
               <tbody>
                 {intents.map((i, k) => (
                   <tr key={k}>
                     <td>{new Date(i.data).toLocaleString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</td>
-                    <td>{NOM_PAS[i.pas] ?? i.pas}</td>
+                    <td>{(i.nivell ?? 0) + 1}</td>
+                    <td>{nomPas(i.pas, i.quantitats)}</td>
                     <td>{i.habilitat === 'estetica' ? '—' : String(i.resposta)}</td>
                     <td>{i.habilitat === 'estetica' || i.primeraResposta === i.resposta ? '—' : String(i.primeraResposta)}</td>
                     <td>{NOM_AJUDA[i.ajuda]}</td>
@@ -108,6 +125,18 @@ export default function Adults(props: Props) {
             </table>
           </div>
         )}
+      </section>
+
+      <section>
+        <h3>Nivel</h3>
+        <p className="nota">Cada misión completada pasa al nivel siguiente; después del último vuelve al primero. Las cantidades no pasan de 5. Elegir un nivel deja la misión en curso y empieza ese nivel al tocar la cesta.</p>
+        <div className="nivells">
+          {NIVELLS.map((_, n) => (
+            <button key={n} className={`nivell${(missio ? missio.nivell : desat.nivell) === n ? ' actiu' : ''}`} onClick={() => props.onNivell(n)}>
+              <strong>{n + 1}</strong><span>{descripcioNivell(n)}</span>
+            </button>
+          ))}
+        </div>
       </section>
 
       <section>

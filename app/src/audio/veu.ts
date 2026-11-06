@@ -8,6 +8,9 @@ class Veu {
   private torn = 0;
   private oients = new Set<() => void>();
   private instruccio: string[] = [];
+  /** Clips ya descargados: en el móvil, pedir cada frase al servidor al decirla hacía esperar. */
+  private carregats = new Map<string, string>();
+  private pendents = new Map<string, Promise<void>>();
   activada = false;
   /** Preferencia del adulto. Si está desactivada se respeta el ritmo, sin sonido. */
   habilitada = true;
@@ -34,6 +37,24 @@ class Veu {
     }
   }
 
+  /** Descarga los clips por adelantado. No falla: si no se puede, se pedirán al reproducirlos. */
+  precarrega(noms: string[]): Promise<void> {
+    if (this.silenci) return Promise.resolve();
+    return Promise.all(noms.map(n => {
+      if (this.carregats.has(n)) return;
+      let p = this.pendents.get(n);
+      if (!p) {
+        p = fetch(`audio/${n}.m4a`)
+          .then(r => (r.ok ? r.blob() : Promise.reject(new Error(String(r.status)))))
+          .then(b => { this.carregats.set(n, URL.createObjectURL(b)); })
+          .catch(() => {})
+          .finally(() => this.pendents.delete(n));
+        this.pendents.set(n, p);
+      }
+      return p;
+    })).then(() => {});
+  }
+
   /** Llamar dentro del primer gesto del usuario. */
   activa() {
     if (this.activada) return;
@@ -58,7 +79,7 @@ class Veu {
       const t = setTimeout(fi, 10000);
       this.audio.onended = fi;
       this.audio.onerror = () => { this.marcaFallida(); fi(); };
-      this.audio.src = `audio/${nom}.m4a`;
+      this.audio.src = this.carregats.get(nom) ?? `audio/${nom}.m4a`;
       this.audio.play()?.catch((e: DOMException) => {
         if (e.name === 'AbortError') return;
         // Antes del primer gesto no es un fallo: la instrucción se repetirá al tocar.

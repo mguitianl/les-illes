@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { ambIntent, carrega, completaMissio, desa, nou, type Avis, type Desat } from './logica/desat';
-import { PASSOS, aplica, inicia, pasActual, type Banderi, type EstatMissio, type Intent } from './logica/missio';
+import { N_PASSOS, aplica, clipsNivell, inicia, pasActual, type Banderi, type EstatMissio, type Intent } from './logica/missio';
 import { veu } from './audio/veu';
 import Barra from './ui/Barra';
 import Port from './ui/Port';
@@ -23,7 +23,7 @@ function magatzem(): Pick<Storage, 'getItem' | 'setItem' | 'removeItem'> {
 function normalitza(d: Desat): Desat {
   const m = d.missio;
   if (!m || m.fase !== 'exit') return d;
-  if (m.pas >= PASSOS.length - 1) return completaMissio(d, m.banderi);
+  if (m.pas >= N_PASSOS - 1) return completaMissio(d, m.banderi);
   return { ...d, missio: aplica(m, { t: 'seguent' }) };
 }
 
@@ -53,6 +53,8 @@ export default function App({ sensedemo }: { sensedemo: boolean }) {
 
   useEffect(() => { setDesatOk(desa(mag, desat)); }, [desat, mag]);
   useEffect(() => { veu.habilitada = desat.preferencies.veu; }, [desat.preferencies.veu]);
+  const nivellActiu = desat.missio?.nivell ?? desat.nivell;
+  useEffect(() => { veu.precarrega(['silenci', ...clipsNivell(nivellActiu)]); }, [nivellActiu]);
 
   // Primer gesto: activa el audio y, si no ha empezado nada, repite la instrucción.
   useEffect(() => {
@@ -81,7 +83,7 @@ export default function App({ sensedemo }: { sensedemo: boolean }) {
   };
 
   const entra = () => {
-    setDesat(d => (d.missio ? normalitza(d) : { ...d, missio: inicia() }));
+    setDesat(d => (d.missio ? normalitza(d) : { ...d, missio: inicia(d.nivell) }));
     setFinal(false);
     setVista('berenar');
   };
@@ -124,6 +126,7 @@ export default function App({ sensedemo }: { sensedemo: boolean }) {
           veuFallida={estatVeu[1] === '1'}
           onTanca={() => { setAdults(false); setAvis('cap'); }}
           onCanvia={setDesat}
+          onNivell={n => { setDesat(d => ({ ...d, nivell: n, missio: null })); setVista('port'); setFinal(false); }}
           onReiniciaMissio={() => { setDesat(d => ({ ...d, missio: null })); setVista('port'); setFinal(false); }}
           onEsborraTot={() => { setDesat(nou()); setVista('port'); setFinal(false); }}
         />

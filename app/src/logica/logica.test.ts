@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { afegeix, compte, esValid, placaLliure, transfereix, type Objecte } from './quantitats';
-import { PASSOS, acabada, aplica, confirma, esEstatValid, inicia, pasActual, type EstatMissio } from './missio';
-import { CLAU, CLAU_DANYAT, MAX_INTENTS, ambIntent, carrega, completaMissio, desa, nou } from './desat';
+import { N_NIVELLS, PASSOS, acabada, clipsNivell, passos, aplica, confirma, esEstatValid, inicia, pasActual, type EstatMissio } from './missio';
+import { CLAU, CLAU_DANYAT, MAX_INTENTS, migra, valida, type Desat, ambIntent, carrega, completaMissio, desa, nou } from './desat';
 
 const ids = (e: EstatMissio, z: string) => e.objectes.filter(o => o.zona === z).map(o => o.id);
 const total = (e: EstatMissio) => e.objectes.length;
@@ -32,8 +32,8 @@ describe('motor de cantidades', () => {
     expect(compte(a, 'cistella')).toBe(1);
   });
   it('no admite destinos llenos ni objetos inexistentes', () => {
-    const o = afegeix([], { terra: 1, arbre: 1 });
-    expect(transfereix(o, 1, 'terra')).toBeNull();
+    const o = afegeix([], { terra: 3, arbre: 1 });
+    expect(transfereix(o, 3, 'terra')).toBeNull();
     expect(transfereix(o, 99, 'cistella')).toBeNull();
   });
   it('reutiliza la primera plaza libre', () => {
@@ -46,7 +46,7 @@ describe('motor de cantidades', () => {
     expect(esValid([{ id: 0, zona: 'cistella', placa: 0 }, { id: 1, zona: 'cistella', placa: 0 }])).toBe(false);
     expect(esValid([{ id: 0, zona: 'cistella', placa: 0 }, { id: 0, zona: 'arbre', placa: 1 }])).toBe(false);
     expect(esValid([{ id: 0, zona: 'mar', placa: 0 }])).toBe(false);
-    expect(esValid([{ id: 0, zona: 'terra', placa: 1 }])).toBe(false);
+    expect(esValid([{ id: 0, zona: 'terra', placa: 3 }])).toBe(false);
   });
 });
 
@@ -131,9 +131,44 @@ describe('misión', () => {
     const pos = PASSOS.filter(p => p.tipus === 'triar').map(p => p.tipus === 'triar' && p.opcions.indexOf(p.correcta));
     expect(new Set(pos).size).toBeGreaterThan(1);
   });
+  it('cada nivel se puede completar y sus cantidades son coherentes', () => {
+    for (let n = 0; n < N_NIVELLS; n++) {
+      let e = inicia(n);
+      expect(e.nivell).toBe(n);
+      const [rec, afe, tot, don, que, ban] = passos(n);
+      if (rec.tipus !== 'moure' || afe.tipus !== 'moure' || tot.tipus !== 'triar' || don.tipus !== 'moure' || que.tipus !== 'triar' || ban.tipus !== 'banderi') throw new Error('orden');
+      e = ok(mou(e, 'arbre', 'cistella', rec.objectiu));
+      const b = compte(e.objectes, 'terra');
+      e = ok(mou(e, 'terra', 'cistella', b));
+      expect(compte(e.objectes, 'cistella')).toBe(afe.objectiu);
+      expect(tot.correcta).toBe(rec.objectiu + b);
+      expect(new Set(tot.opcions).size).toBe(2);
+      e = ok(aplica(e, { t: 'triar', valor: tot.correcta }));
+      e = ok(mou(e, 'cistella', 'safata', don.objectiu));
+      expect(compte(e.objectes, 'cistella')).toBe(que.correcta);
+      expect(que.correcta).toBeGreaterThan(0);
+      expect(new Set(que.opcions).size).toBe(2);
+      e = ok(aplica(e, { t: 'triar', valor: que.correcta }));
+      e = aplica(e, { t: 'triar', valor: ban.opcions[1] });
+      e = aplica(confirma(e).estat, { t: 'seguent' });
+      expect(acabada(e)).toBe(true);
+      expect(total(e)).toBe(5 + b);
+    }
+  });
+  it('hay audio para cada clip que pide un nivel', async () => {
+    const { frases } = await import('./textos');
+    const f = frases();
+    // @ts-expect-error: el proyecto no instala los tipos de Node; la prueba corre en Node.
+    const { existsSync } = await import('node:fs');
+    for (let n = 0; n < N_NIVELLS; n++) for (const c of clipsNivell(n)) {
+      expect(f[c] ?? (/^n\d$/.test(c) ? 'ok' : undefined), c).toBeDefined();
+      expect(existsSync(new URL(`../../public/audio/${c}.m4a`, import.meta.url)), `${c}.m4a`).toBe(true);
+    }
+  });
   it('valida estados guardados', () => {
     expect(esEstatValid(inicia())).toBe(true);
     expect(esEstatValid({ ...inicia(), pas: 99 })).toBe(false);
+    expect(esEstatValid({ ...inicia(), nivell: 99 })).toBe(false);
     expect(esEstatValid({ ...inicia(), objectes: [{ id: 0, zona: 'cistella', placa: 9 }] })).toBe(false);
   });
 });
@@ -187,6 +222,22 @@ describe('guardado', () => {
     d = completaMissio(d, 'banderi-estel');
     expect(d.banderiActiu).toBe('banderi-estel');
     expect(d.adorns.length).toBe(2);
+  });
+  it('completar una misión pasa al nivel siguiente y después del último vuelve al primero', () => {
+    let d: Desat = { ...nou(), missio: inicia(0) };
+    d = completaMissio(d, 'banderi-poma');
+    expect(d.nivell).toBe(1);
+    d = completaMissio({ ...d, missio: inicia(N_NIVELLS - 1) }, null);
+    expect(d.nivell).toBe(0);
+  });
+  it('migra el formato 1: la partida en curso es del primer nivel', () => {
+    const { nivell: _, ...m0 } = mou(inicia(), 'arbre', 'cistella', 2);
+    const v1 = { ...nou(), versio: 1, nivell: undefined, missionsCompletades: 1, missio: m0 };
+    expect(migra(v1 as never)?.versio).toBe(2);
+    const r = valida(v1);
+    expect(r?.avis).toBe('cap');
+    expect(r?.desat.missio?.nivell).toBe(0);
+    expect(r?.desat.nivell).toBe(1);
   });
   it('si el almacenamiento falla, desa lo indica sin romper', () => {
     expect(desa({ getItem: () => null, setItem: () => { throw new Error('quota'); } }, nou())).toBe(false);

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { veu } from '../audio/veu';
 import type { Banderi } from '../logica/missio';
+import { Dibuix } from '../art/Dibuix';
 
 interface Props {
   banderi: Banderi | null;
@@ -34,8 +35,8 @@ export default function Port({ banderi, veuInicial, alzaBanderi, onEntra }: Prop
 
   return (
     <main id="port" className="escena">
-      <svg className="fons fons-h" aria-hidden="true"><use href="#fons-port-h" /></svg>
-      <svg className="fons fons-v" aria-hidden="true"><use href="#fons-port-v" /></svg>
+      <Dibuix className="fons fons-h" id="fons-port-h" w={1180} h={820} par="xMidYMax slice" />
+      <Dibuix className="fons fons-v" id="fons-port-v" w={390} h={844} par="xMidYMax slice" />
       {banderi && (['h', 'v'] as const).map(o => {
         const d = DRIZA[o];
         return (
@@ -46,10 +47,10 @@ export default function Port({ banderi, veuInicial, alzaBanderi, onEntra }: Prop
       })}
       <div className="port-moll">
         <button id="port-guineu" className="guineu-boto" aria-label="Ajuda" onClick={ajuda}>
-          <svg viewBox="0 0 250 250"><use href="#guineu-assenyala" /></svg>
+          <Dibuix id="guineu-assenyala" w={250} h={250} />
         </button>
         <button ref={cistella} id="port-cistella" className="port-cistella" aria-label="Cistella: comença el berenar" onClick={onEntra}>
-          <svg viewBox="0 0 400 290"><use href="#cistella" /></svg>
+          <Dibuix id="cistella" w={400} h={290} />
         </button>
       </div>
     </main>

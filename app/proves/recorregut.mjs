@@ -99,6 +99,8 @@ for (const [nomMotor, motor] of [['webkit', webkit], ['chromium', chromium]]) {
     ok(await p.evaluate(() => __illes.vista()) === 'port' && fi.missio === null, 'cierre natural en el puerto');
     ok(fi.banderiActiu === 'banderi-estel' && fi.adorns.length === 1 && fi.missionsCompletades === 1, 'banderín ganado y visible');
     ok(await p.locator('.banderi-vaixell').count() === 2, 'el banderín está en el barco');
+    await p.locator('#port-cistella').tap(); await espera(400);
+    ok((await d()).missio.nivell === 1 && (await p.locator('#rotul').innerText()).includes('dues pomes'), 'la misión siguiente es el nivel 2');
     const indep = Object.fromEntries(fi.intents.map(i => [i.pas, i.independent]));
     ok(fi.intents.length === 6 && indep.recull === false && indep.total === false && indep.dona === false && indep.afegeix === true && indep.queden === true,
       'registro: con ayuda en recoger, total y entregar; sin ayuda en añadir y quedan');
@@ -110,7 +112,16 @@ for (const [nomMotor, motor] of [['webkit', webkit], ['chromium', chromium]]) {
     for (const w of text.split(', ')) await p.locator('.teclat button', { hasText: String(PAR.indexOf(w)) }).tap();
     ok(await p.locator('.adults h3', { hasText: 'Resumen' }).count() === 1, 'zona de adultos con pulsación larga y código');
     ok(await p.locator('.adults tbody tr').count() === 6, 'muestra los 6 pasos registrados');
-    await p.locator('.adults-cap .boto-text').tap();
+    await p.locator('.nivell').nth(6).tap(); await p.locator('.adults-cap .boto-text').tap(); await espera(300);
+    await p.locator('#port-cistella').tap(); await espera(400);
+    ok((await d()).missio.nivell === 6 && await pas() === 'recull', 'el adulto puede elegir nivel (7: 2 + 3)');
+    for (let i = 0; i < 2; i++) await arrossega(await pomaEn('arbre'), await centre(zona('cistella')));
+    await passa();
+    ok(await pas() === 'afegeix' && await cnt('terra') === 3, 'nivel 7: tres manzanas encontradas');
+    for (let i = 0; i < 3; i++) await arrossega(await pomaEn('terra'), await centre(zona('cistella')));
+    await passa();
+    ok(await pas() === 'total' && await eq() === '2+3' && await cnt('cistella') === 5, 'nivel 7: 2 + 3 con 5 en la cesta');
+    ok((await p.locator('.targeta').nth(0).innerText()).includes('5') && (await p.locator('.targeta').nth(1).innerText()).includes('2'), 'nivel 7: tarjetas 5 y 2');
     // Datos dañados
     await p.evaluate(() => localStorage.setItem('illes-nicole', '{dañado'));
     await p.reload(); await espera(300);

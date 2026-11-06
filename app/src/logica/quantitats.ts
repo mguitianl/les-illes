@@ -4,7 +4,7 @@
 export const ZONES = ['arbre', 'terra', 'cistella', 'safata'] as const;
 export type ZonaId = (typeof ZONES)[number];
 
-export const CAPACITAT: Record<ZonaId, number> = { arbre: 5, terra: 1, cistella: 5, safata: 5 };
+export const CAPACITAT: Record<ZonaId, number> = { arbre: 5, terra: 3, cistella: 5, safata: 5 };
 
 export interface Objecte {
   id: number;

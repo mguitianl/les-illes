@@ -1,15 +1,17 @@
 /* Guardado local versionado. Solo lo mínimo, sin datos personales. */
-import { BANDERINS, esEstatValid, type Banderi, type EstatMissio, type Intent } from './missio';
+import { BANDERINS, N_NIVELLS, esEstatValid, type Banderi, type EstatMissio, type Intent } from './missio';
 
 export const CLAU = 'illes-nicole';
 export const CLAU_DANYAT = 'illes-nicole-danyat';
-export const VERSIO = 1;
+export const VERSIO = 2;
 export const MAX_INTENTS = 200;
 
 export interface Desat {
   versio: typeof VERSIO;
   preferencies: { veu: boolean };
   missio: EstatMissio | null;
+  /** Nivel con el que empieza la próxima misión. */
+  nivell: number;
   /** Adornos conseguidos; no se pierden al reiniciar una actividad. */
   adorns: Banderi[];
   banderiActiu: Banderi | null;
@@ -22,14 +24,21 @@ export interface Desat {
 export type Avis = 'cap' | 'nou' | 'danyat' | 'missio-reiniciada';
 
 export const nou = (): Desat => ({
-  versio: VERSIO, preferencies: { veu: true }, missio: null, adorns: [], banderiActiu: null,
+  versio: VERSIO, preferencies: { veu: true }, missio: null, nivell: 0, adorns: [], banderiActiu: null,
   tutorialVist: false, missionsCompletades: 0, intents: [], notes: '',
 });
 
 type Magatzem = Pick<Storage, 'getItem' | 'setItem'>;
 
 /** Migraciones de versiones anteriores. Cada entrada transforma la versión n en la n+1. */
-const MIGRACIONS: Record<number, (d: Record<string, unknown>) => Record<string, unknown>> = {};
+const MIGRACIONS: Record<number, (d: Record<string, unknown>) => Record<string, unknown>> = {
+  // v2: niveles. La partida en curso era del primer nivel; la siguiente misión pasa al nivel 2.
+  1: d => {
+    const m = d.missio as Record<string, unknown> | null | undefined;
+    const fetes = Number.isInteger(d.missionsCompletades) ? (d.missionsCompletades as number) : 0;
+    return { ...d, versio: 2, nivell: Math.min(fetes, 1), missio: m && typeof m === 'object' ? { ...m, nivell: 0 } : m ?? null };
+  },
+};
 
 export function migra(d: Record<string, unknown>): Record<string, unknown> | null {
   let v = d.versio;
@@ -56,6 +65,7 @@ export function valida(raw: unknown): { desat: Desat; avis: Avis } | null {
     preferencies: { veu: typeof pref?.veu === 'boolean' ? pref.veu : true },
     adorns: Array.isArray(d.adorns) ? [...new Set(d.adorns.filter(esBanderi))] : [],
     banderiActiu: esBanderi(d.banderiActiu) ? d.banderiActiu : null,
+    nivell: Number.isInteger(d.nivell) && (d.nivell as number) >= 0 && (d.nivell as number) < N_NIVELLS ? (d.nivell as number) : 0,
     tutorialVist: d.tutorialVist === true,
     missionsCompletades: Number.isInteger(d.missionsCompletades) ? (d.missionsCompletades as number) : 0,
     intents: Array.isArray(d.intents) ? (d.intents as Intent[]).filter(i => i && typeof i.pas === 'string').slice(-MAX_INTENTS) : [],
@@ -101,11 +111,14 @@ export function ambIntent(d: Desat, i: Intent): Desat {
   return { ...d, intents: [...d.intents, i].slice(-MAX_INTENTS) };
 }
 
-/** Al terminar: suma la misión y guarda el banderín sin duplicar premios. */
+/** Al terminar: suma la misión, pasa al nivel siguiente y guarda el banderín sin duplicar premios.
+    Después del último nivel se vuelve a empezar la lista. */
 export function completaMissio(d: Desat, b: Banderi | null): Desat {
+  const actual = d.missio?.nivell ?? d.nivell;
   return {
     ...d,
     missio: null,
+    nivell: (actual + 1) % N_NIVELLS,
     missionsCompletades: d.missionsCompletades + 1,
     adorns: b && !d.adorns.includes(b) ? [...d.adorns, b] : d.adorns,
     banderiActiu: b ?? d.banderiActiu,

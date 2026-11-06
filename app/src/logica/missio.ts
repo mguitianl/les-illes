@@ -1,12 +1,13 @@
 /* Misión «El berenar de la tripulació»: contenido declarativo y transiciones puras.
    La animación y el audio no forman parte de este módulo. */
 import { afegeix, compte, esValid, transfereix, type Objecte, type Recompte, type ZonaId } from './quantitats';
+import { NIVELLS, clau, rotul } from './textos';
 
 export type Habilitat = 'recompte' | 'suma' | 'resta' | 'estetica';
 export type TipusAjuda = 'cap' | 'senyalar' | 'comptar' | 'demostrar';
 export const AJUDES: readonly TipusAjuda[] = ['cap', 'senyalar', 'comptar', 'demostrar'];
 export type Terme = number | '+' | '−' | '=';
-export const BANDERINS = ['banderi-poma', 'banderi-estel'] as const;
+export const BANDERINS = ['banderi-poma', 'banderi-estel', 'banderi-cor', 'banderi-lluna', 'banderi-peix', 'banderi-ona'] as const;
 export type Banderi = (typeof BANDERINS)[number];
 
 interface PasBase {
@@ -44,41 +45,69 @@ export interface PasBanderi extends PasBase {
 }
 export type Pas = PasMoure | PasTriar | PasBanderi;
 
-export const PASSOS: readonly Pas[] = [
-  {
-    id: 'recull', tipus: 'moure', rotul: 'Posa tres pomes a la cistella', veu: 'recull', ajuda: 'a-recull',
-    ok: 'ok-recull', demo: 'demo-cistella', habilitat: 'recompte', origen: 'arbre', desti: 'cistella',
-    objectiu: 3, nous: { arbre: 5 }, visibles: ['arbre', 'cistella'], quantitats: [3],
-  },
-  {
-    id: 'afegeix', tipus: 'moure', rotul: "N'hem trobat una més", veu: 'afegeix', ajuda: 'a-afegeix',
-    ok: 'ok-afegeix', demo: 'demo-cistella', habilitat: 'suma', origen: 'terra', desti: 'cistella',
-    objectiu: 4, nous: { terra: 1 }, visibles: ['terra', 'cistella'], equacioOk: [3, '+', 1], quantitats: [3, 1],
-  },
-  {
-    // El resultado de la suma se muestra solo después de responder.
-    id: 'total', tipus: 'triar', rotul: 'Quantes pomes tenim ara?', veu: 'total', ajuda: 'a-mira',
-    ok: 'ok-total', habilitat: 'suma', opcions: [4, 3], correcta: 4, zonaComptar: 'cistella',
-    visibles: ['terra', 'cistella'], equacioInicial: [3, '+', 1], equacioOk: [3, '+', 1, '=', 4], quantitats: [3, 1],
-  },
-  {
-    id: 'dona', tipus: 'moure', rotul: 'Dona dues pomes al mariner', veu: 'dona', ajuda: 'a-dona',
-    ok: 'ok-dona', demo: 'demo-safata', habilitat: 'resta', origen: 'cistella', desti: 'safata',
-    objectiu: 2, visibles: ['safata', 'cistella'], equacioOk: [4, '−', 2], quantitats: [4, 2],
-  },
-  {
-    id: 'queden', tipus: 'triar', rotul: 'Quantes pomes queden a la cistella?', veu: 'queden', ajuda: 'a-mira',
-    ok: 'ok-queden', habilitat: 'resta', opcions: [4, 2], correcta: 2, zonaComptar: 'cistella',
-    visibles: ['safata', 'cistella'], equacioInicial: [4, '−', 2], equacioOk: [4, '−', 2, '=', 2], quantitats: [4, 2],
-  },
-  {
-    id: 'banderi', tipus: 'banderi', rotul: 'Tria una bandera per al vaixell', veu: 'banderi', ajuda: 'a-banderi',
-    ok: 'ok-banderi', habilitat: 'estetica', opcions: BANDERINS, visibles: [], quantitats: [],
-  },
-];
+/** Pasos de un nivel. La secuencia es siempre la misma; cambian las cantidades. */
+function genera(nivell: number): Pas[] {
+  const [a, b, c] = NIVELLS[nivell];
+  const s = a + b, r = s - c;
+  // Posición de la respuesta correcta alterna entre niveles y entre las dos preguntas.
+  const parell = nivell % 2 === 0;
+  return [
+    {
+      id: 'recull', tipus: 'moure', rotul: rotul.recull(a), veu: clau.recull(a), ajuda: clau.aRecull(a),
+      ok: clau.okRecull(a), demo: 'demo-cistella', habilitat: 'recompte', origen: 'arbre', desti: 'cistella',
+      objectiu: a, nous: { arbre: 5 }, visibles: ['arbre', 'cistella'], quantitats: [a],
+    },
+    {
+      id: 'afegeix', tipus: 'moure', rotul: rotul.afegeix(b), veu: clau.afegeix(a, b), ajuda: clau.aAfegeix(b),
+      ok: clau.okAfegeix(b), demo: 'demo-cistella', habilitat: 'suma', origen: 'terra', desti: 'cistella',
+      objectiu: s, nous: { terra: b }, visibles: ['terra', 'cistella'], equacioOk: [a, '+', b], quantitats: [a, b],
+    },
+    {
+      // El resultado de la suma se muestra solo después de responder.
+      id: 'total', tipus: 'triar', rotul: 'Quantes pomes tenim ara?', veu: 'total', ajuda: 'a-mira',
+      ok: clau.okTotal(a, b), habilitat: 'suma', opcions: parell ? [s, a] : [a, s], correcta: s, zonaComptar: 'cistella',
+      visibles: ['terra', 'cistella'], equacioInicial: [a, '+', b], equacioOk: [a, '+', b, '=', s], quantitats: [a, b],
+    },
+    {
+      id: 'dona', tipus: 'moure', rotul: rotul.dona(c), veu: clau.dona(c), ajuda: clau.aDona(c),
+      ok: clau.okDona(c), demo: 'demo-safata', habilitat: 'resta', origen: 'cistella', desti: 'safata',
+      objectiu: c, visibles: ['safata', 'cistella'], equacioOk: [s, '−', c], quantitats: [s, c],
+    },
+    {
+      id: 'queden', tipus: 'triar', rotul: 'Quantes pomes queden a la cistella?', veu: 'queden', ajuda: 'a-mira',
+      ok: clau.okQueden(r), habilitat: 'resta', opcions: parell ? [s, r] : [r, s], correcta: r, zonaComptar: 'cistella',
+      visibles: ['safata', 'cistella'], equacioInicial: [s, '−', c], equacioOk: [s, '−', c, '=', r], quantitats: [s, c],
+    },
+    {
+      id: 'banderi', tipus: 'banderi', rotul: 'Tria una bandera per al vaixell', veu: 'banderi', ajuda: 'a-banderi',
+      ok: 'ok-banderi', habilitat: 'estetica',
+      opcions: [BANDERINS[(2 * nivell) % BANDERINS.length], BANDERINS[(2 * nivell + 1) % BANDERINS.length]],
+      visibles: [], quantitats: [],
+    },
+  ];
+}
+
+export const N_NIVELLS = NIVELLS.length;
+const TOTS = NIVELLS.map((_, i) => genera(i));
+export const N_PASSOS = TOTS[0].length;
+export const passos = (nivell: number): readonly Pas[] => TOTS[nivell] ?? TOTS[0];
+/** Compatibilidad: los pasos del primer nivel. */
+export const PASSOS = TOTS[0];
+
+/** Clips de voz que puede necesitar un nivel, para cargarlos antes de que hagan falta. */
+export function clipsNivell(nivell: number): string[] {
+  const out = new Set(['port', 'continuem', 'final', 'comptem', 'n1', 'n2', 'n3', 'n4', 'n5']);
+  for (const p of passos(nivell)) {
+    out.add(p.veu); out.add(p.ajuda); out.add(p.ok);
+    if (p.tipus === 'moure') out.add(p.demo);
+  }
+  return [...out];
+}
 
 export interface EstatMissio {
-  /** Índice del paso; PASSOS.length significa misión terminada. */
+  /** Nivel: índice en NIVELLS. */
+  nivell: number;
+  /** Índice del paso; N_PASSOS significa misión terminada. */
   pas: number;
   objectes: Objecte[];
   nivellAjuda: number;
@@ -93,6 +122,7 @@ export interface EstatMissio {
 export interface Intent {
   data: string;
   pas: string;
+  nivell?: number;
   habilitat: Habilitat;
   quantitats: number[];
   resposta: number | string;
@@ -103,11 +133,11 @@ export interface Intent {
   completat: true;
 }
 
-export const pasActual = (e: EstatMissio): Pas | null => PASSOS[e.pas] ?? null;
-export const acabada = (e: EstatMissio): boolean => e.pas >= PASSOS.length;
+export const pasActual = (e: EstatMissio): Pas | null => passos(e.nivell)[e.pas] ?? null;
+export const acabada = (e: EstatMissio): boolean => e.pas >= N_PASSOS;
 
 function entra(e: EstatMissio, pas: number): EstatMissio {
-  const p = PASSOS[pas];
+  const p = passos(e.nivell)[pas];
   return {
     ...e,
     pas,
@@ -116,8 +146,9 @@ function entra(e: EstatMissio, pas: number): EstatMissio {
   };
 }
 
-export function inicia(): EstatMissio {
-  return entra({ pas: 0, objectes: [], nivellAjuda: 0, errors: 0, primeraResposta: null, triada: null, moguts: 0, fase: 'joc', banderi: null }, 0);
+export function inicia(nivell = 0): EstatMissio {
+  const nv = Number.isInteger(nivell) && nivell >= 0 && nivell < N_NIVELLS ? nivell : 0;
+  return entra({ nivell: nv, pas: 0, objectes: [], nivellAjuda: 0, errors: 0, primeraResposta: null, triada: null, moguts: 0, fase: 'joc', banderi: null }, 0);
 }
 
 export function respostaActual(e: EstatMissio): number | string | null {
@@ -131,7 +162,7 @@ export function esCorrecta(e: EstatMissio): boolean {
   if (!p) return false;
   if (p.tipus === 'moure') return compte(e.objectes, p.desti) === p.objectiu;
   if (p.tipus === 'triar') return e.triada === p.correcta;
-  return (BANDERINS as readonly string[]).includes(String(e.triada));
+  return (p.opcions as readonly string[]).includes(String(e.triada));
 }
 
 export type Accio =
@@ -175,7 +206,7 @@ export function confirma(e: EstatMissio, ara = new Date()): { estat: EstatMissio
     return { estat: { ...e, errors: e.errors + 1, primeraResposta: primera, nivellAjuda: Math.min(e.nivellAjuda + 1, 3) }, correcte: false };
   }
   const intent: Intent = {
-    data: ara.toISOString(), pas: p.id, habilitat: p.habilitat, quantitats: p.quantitats,
+    data: ara.toISOString(), pas: p.id, nivell: e.nivell, habilitat: p.habilitat, quantitats: p.quantitats,
     resposta, primeraResposta: primera, ajuda: AJUDES[e.nivellAjuda], independent: e.nivellAjuda === 0 && e.errors === 0,
     completat: true,
   };
@@ -186,7 +217,8 @@ export function confirma(e: EstatMissio, ara = new Date()): { estat: EstatMissio
 export function esEstatValid(x: unknown): x is EstatMissio {
   if (!x || typeof x !== 'object') return false;
   const e = x as EstatMissio;
-  return Number.isInteger(e.pas) && e.pas >= 0 && e.pas <= PASSOS.length
+  return Number.isInteger(e.nivell) && e.nivell >= 0 && e.nivell < N_NIVELLS
+    && Number.isInteger(e.pas) && e.pas >= 0 && e.pas <= N_PASSOS
     && esValid(e.objectes)
     && Number.isInteger(e.nivellAjuda) && e.nivellAjuda >= 0 && e.nivellAjuda <= 3
     && Number.isInteger(e.errors) && Number.isInteger(e.moguts)
